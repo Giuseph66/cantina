@@ -1,0 +1,14 @@
+{
+    "name": "@cantina/shared",
+    "version": "0.0.1",
+    "description": "Tipos e enums compartilhados entre api e web",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch"
+    },
+    "devDependencies": {
+        "typescript": "^5.5.4"
+    }
+}

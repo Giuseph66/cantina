@@ -1,0 +1,452 @@
+/* ═══════════════════════════════════════════════════════════
+   CANTINA — Login / Register
+   Centered floating card over full-screen food background
+   ═══════════════════════════════════════════════════════════ */
+
+@keyframes floatUp {
+    from { opacity: 0; transform: translateY(28px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shake {
+    10%, 90% { transform: translateX(-2px); }
+    20%, 80% { transform: translateX(3px); }
+    30%, 50%, 70% { transform: translateX(-5px); }
+    40%, 60% { transform: translateX(5px); }
+}
+
+/* ── Page — full-screen food background ─────────────────── */
+.page {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    background-color: #2a1208;
+    background-image: url('/images/login-burguer.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+/* Dark warm overlay so background doesn't compete with card */
+.page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(15,6,2,0.72) 0%, rgba(40,18,4,0.58) 100%);
+    pointer-events: none;
+}
+
+/* ── Floating card ───────────────────────────────────────── */
+.card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow:
+        0 2px 4px rgba(0,0,0,0.12),
+        0 8px 20px rgba(0,0,0,0.2),
+        0 28px 60px rgba(0,0,0,0.32);
+    animation: floatUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Hero photo mosaic (top of card) ─────────────────────── */
+.cardHero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 200px;
+    position: relative;
+}
+
+.heroCell {
+    overflow: hidden;
+}
+
+.heroCellImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.7s ease;
+}
+
+.heroCell:hover .heroCellImg {
+    transform: scale(1.06);
+}
+
+/* Back button overlaid on hero (top-left) */
+.mobileBack {
+    position: absolute;
+    top: 0.9rem;
+    left: 0.9rem;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #1a0a04;
+    text-decoration: none;
+    font-size: 0.825rem;
+    font-weight: 800;
+    padding: 0.45rem 0.85rem 0.45rem 0.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    transition: background 0.18s, transform 0.18s;
+}
+
+.mobileBack:hover {
+    background: #fff;
+    transform: translateX(-2px);
+}
+
+/* Subtle bottom gradient so card body reads cleanly */
+.heroOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.18) 100%);
+    pointer-events: none;
+}
+
+/* ── Card body (form) ────────────────────────────────────── */
+.cardBody {
+    padding: 1.75rem 1.75rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+/* ── Heading ─────────────────────────────────────────────── */
+.formHead {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.formTitle {
+    font-size: 1.65rem;
+    font-weight: 950;
+    color: #1a0a04;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.dot {
+    color: #c8894a;
+}
+
+.formSub {
+    font-size: 0.875rem;
+    color: #9c8a7e;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* ── Form fields ─────────────────────────────────────────── */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #b0998c;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-left: 0.85rem;
+}
+
+.input {
+    padding: 0.82rem 1.1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #1a0a04;
+    outline: none;
+    background: #f5ede6;
+    border: 2px solid transparent;
+    box-shadow: inset 0 1px 3px rgba(93, 58, 26, 0.08);
+    transition: background 0.18s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.input::placeholder {
+    color: #c4aa9a;
+}
+
+.input:focus {
+    background: #fff;
+    border-color: #c8894a;
+    box-shadow: inset 0 1px 3px rgba(93, 58, 26, 0.04),
+                0 0 0 4px rgba(200, 137, 74, 0.15);
+}
+
+.passwordWrapper {
+    display: flex;
+    align-items: center;
+    background: #f5ede6;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    box-shadow: inset 0 1px 3px rgba(93, 58, 26, 0.08);
+    transition: background 0.18s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.passwordWrapper:focus-within {
+    background: #fff;
+    border-color: #c8894a;
+    box-shadow: inset 0 1px 3px rgba(93, 58, 26, 0.04),
+                0 0 0 4px rgba(200, 137, 74, 0.15);
+}
+
+/* Input dentro do wrapper: transparente, sem borda própria */
+.passwordWrapper .input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding-right: 0.25rem;
+}
+
+.passwordWrapper .input:focus {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.eyeBtn {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: #c8b8ae;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem 0 0.25rem;
+    transition: color 0.18s;
+}
+
+.eyeBtn:hover { color: #c8894a; }
+
+/* ── Error ───────────────────────────────────────────────── */
+.error {
+    background: #fff5f5;
+    color: #c53030;
+    border: 1.5px solid #fed7d7;
+    border-radius: 9px;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* ── Submit button ───────────────────────────────────────── */
+.button {
+    width: 100%;
+    background: #5d3a1a;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem;
+    font-size: 0.975rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+    box-shadow: 0 4px 14px rgba(93, 58, 26, 0.28);
+    letter-spacing: 0.01em;
+    margin-top: 0.1rem;
+}
+
+.button:hover:not(:disabled) {
+    background: #4a2d14;
+    transform: translateY(-1px);
+    box-shadow: 0 7px 20px rgba(93, 58, 26, 0.32);
+}
+
+.button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 19px;
+    height: 19px;
+    border: 2.5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: block;
+}
+
+/* ── Footer links ────────────────────────────────────────── */
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid #f0ebe5;
+}
+
+.registerHint {
+    font-size: 0.875rem;
+    color: #9c8a7e;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+}
+
+.registerLink {
+    color: #5d3a1a;
+    font-weight: 800;
+    text-decoration: none;
+    border-bottom: 1.5px solid rgba(93, 58, 26, 0.22);
+    padding-bottom: 1px;
+    transition: color 0.18s, border-color 0.18s;
+}
+
+.registerLink:hover {
+    color: #c8894a;
+    border-bottom-color: #c8894a;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #b8a89e;
+    text-decoration: none;
+    font-size: 0.775rem;
+    font-weight: 700;
+    transition: color 0.18s;
+}
+
+.backLink:hover {
+    color: #5d3a1a;
+}
+
+/* On mobile the hero already has the mobileBack button */
+@media (max-width: 480px) {
+    .backLink { display: none; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   MOBILE  ≤ 480px
+   Card rises from bottom, fills viewport — zero page scroll
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+    /* Lock the page — no scroll, taken out of document flow */
+    .page {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        padding: 0;
+        align-items: flex-end;
+        /* min-height override not needed — fixed positioning wins */
+    }
+
+    /* Card sizes to content, sticks to bottom; background shows above */
+    .card {
+        width: 100%;
+        max-width: 100%;
+        max-height: 92dvh;
+        border-radius: 22px 22px 0 0;
+        box-shadow: 0 -8px 40px rgba(0,0,0,0.28);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* Hero takes a fixed slice */
+    .cardHero {
+        flex-shrink: 0;
+        height: 160px;
+        gap: 2px;
+        background: #fff;
+    }
+
+    .heroCell:hover .heroCellImg { transform: none; }
+
+    /* Form body fills the rest, scrolls internally only if needed */
+    .cardBody {
+        flex: 1;
+        overflow: hidden;
+        padding: 1.25rem 1.25rem 1.5rem;
+        gap: 1rem;
+    }
+
+    .formTitle { font-size: 1.35rem; }
+    .formSub   { font-size: 0.8rem; }
+
+    .form { gap: 0.55rem; }
+
+    .field { gap: 0.25rem; }
+
+    .label { font-size: 0.65rem; }
+
+    .input {
+        font-size: 16px; /* prevents iOS zoom */
+        padding: 0.62rem 0.85rem;
+        border-radius: 9px;
+    }
+
+    .button {
+        padding: 0.85rem;
+        margin-top: 0;
+    }
+
+    .footer { gap: 0.5rem; padding-top: 0.2rem; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   REGISTER PAGE — backward-compat
+   ════════════════════════════════════════════════════════════ */
+.logoCircle {
+    width: 68px;
+    height: 68px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logoTitle {
+    font-size: 1.9rem;
+    font-weight: 950;
+    color: var(--primary);
+    letter-spacing: -0.04em;
+    margin: 0;
+}
+
+.logoSub {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    font-weight: 500;
+    margin: 0;
+}

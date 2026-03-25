@@ -1,0 +1,358 @@
+.page {
+    min-height: 100vh;
+    padding: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: var(--bg-main);
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    text-align: center;
+    gap: 1.5rem;
+    animation: fadeIn 0.6s ease;
+}
+
+.emptyState h2 {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--primary);
+}
+
+.emptyState p {
+    color: var(--text-dim);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem 0.5rem 0.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 950;
+    color: var(--primary);
+    letter-spacing: -0.05em;
+    margin: 0;
+}
+
+.titleBlock {
+    text-align: center;
+}
+
+.subtitle {
+    margin: 0.35rem 0 0;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.iconBtn,
+.backBtn {
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+.iconBtn:hover {
+    transform: translateX(-4px);
+    box-shadow: var(--shadow-md);
+    background: var(--bg-surface);
+}
+
+.backBtn {
+    width: auto;
+    padding: 0.75rem 1.5rem;
+    font-weight: 800;
+    background: var(--primary);
+    color: white;
+    border: none;
+    margin-top: 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding-bottom: 5rem;
+}
+
+.sectionTitle {
+    font-size: 1.125rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cartSection,
+.paymentSection {
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.itemList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    padding: 0;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--bg-main);
+    padding-bottom: 1.25rem;
+}
+
+.itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.itemName {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.itemPrice {
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 0.875rem;
+}
+
+.qtyControls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--bg-main);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 0.25rem;
+}
+
+.qtyControls button {
+    background: white;
+    border: 1px solid var(--glass-border);
+    color: var(--primary);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    transition: var(--transition-fast);
+}
+
+.qtyControls button:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.qtyValue {
+    font-weight: 900;
+    font-size: 0.875rem;
+    min-width: 1.5rem;
+    text-align: center;
+    color: var(--text-main);
+}
+
+.removeBtn {
+    color: var(--secondary) !important;
+}
+
+.totalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 950;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--bg-main);
+    color: var(--text-main);
+}
+
+.totalPrice {
+    color: var(--primary);
+}
+
+.paymentOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    background: white;
+}
+
+.option:hover {
+    border-color: var(--secondary);
+    background: var(--bg-surface);
+}
+
+.option input {
+    accent-color: var(--primary);
+    transform: scale(1.2);
+}
+
+.activeOption {
+    background: var(--bg-surface) !important;
+    border-color: var(--secondary) !important;
+    box-shadow: inset 0 0 0 1px var(--secondary);
+}
+
+.paymentLabel {
+    flex: 1;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.infoBox {
+    margin-bottom: 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: 1rem;
+    background: rgba(212, 163, 115, 0.12);
+    border: 1px solid rgba(212, 163, 115, 0.18);
+    color: var(--primary);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.infoBoxTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+}
+
+.infoBoxText {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.infoBoxActions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.secondaryAction,
+.ghostAction {
+    flex: 1;
+    min-height: 42px;
+    border-radius: 999px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.secondaryAction {
+    border: none;
+    background: var(--primary);
+    color: white;
+}
+
+.ghostAction {
+    border: 1px solid rgba(93, 64, 55, 0.14);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--primary);
+}
+
+.confirmBtn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 1.25rem;
+    border-radius: 1rem;
+    font-size: 1.125rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-md);
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.confirmBtn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    background: #4a332c;
+}
+
+.confirmBtn:disabled {
+    background: var(--text-muted);
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.error {
+    background: #fff5f5;
+    color: #c53030;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid #feb2b2;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

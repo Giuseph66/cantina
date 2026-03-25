@@ -1,0 +1,210 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums (emulated as String in SQLite) ────────────────────────────────────
+// Role        : CLIENT | CASHIER | KITCHEN | ADMIN
+// OrderStatus : CREATED | CONFIRMED | PAID | IN_PREP | READY | PICKED_UP | CANCELLED | EXPIRED
+// OrderChannel: ONLINE | COUNTER
+// PaymentMethod: ON_PICKUP | PIX | CASH | CARD | INTERNAL_CREDIT
+// CreditNoteStatus: OPEN | PAID | CANCELLED
+// StockMode   : UNLIMITED | CONTROLLED
+// CashMovementType: SALE | SANGRIA | AJUSTE
+
+// ─── Modelos ──────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("CLIENT")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  orders              Order[]         @relation("UserOrders")
+  ticketsConsumed     Ticket[]        @relation("ConsumedBy")
+  cashSessionsOpened  CashSession[]   @relation("OpenedBy")
+  cashSessionsClosed  CashSession[]   @relation("ClosedBy")
+  creditNotes         CreditNote[]    @relation("CreditNoteCustomer")
+  creditNotesCreated  CreditNote[]    @relation("CreditNoteCreatedBy")
+  creditNotesSettled  CreditNote[]    @relation("CreditNoteSettledBy")
+  auditLogs           AuditLog[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  sortOrder Int       @default(0) @map("sort_order")
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  priceCents  Int      @map("price_cents")
+  categoryId  String   @map("category_id")
+  imageUrl    String?  @map("image_url")
+  isActive    Boolean  @default(true) @map("is_active")
+  stockMode   String   @default("UNLIMITED") @map("stock_mode")
+  stockQty    Int      @default(0) @map("stock_qty")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  category   Category    @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([isActive, categoryId])
+  @@map("products")
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  userId        String?  @map("user_id")
+  channel       String   @default("ONLINE")
+  status        String   @default("CREATED")
+  totalCents    Int      @map("total_cents")
+  paymentMethod String   @map("payment_method")
+  paidAt        DateTime? @map("paid_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user           User?          @relation("UserOrders", fields: [userId], references: [id])
+  items          OrderItem[]
+  ticket         Ticket?
+  creditNote     CreditNote?
+  cashMovements  CashMovement[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model CreditNote {
+  id                   String    @id @default(uuid())
+  orderId              String    @unique @map("order_id")
+  customerUserId       String?   @map("customer_user_id")
+  customerName         String?   @map("customer_name")
+  customerPhone        String?   @map("customer_phone")
+  status               String    @default("OPEN")
+  totalCents           Int       @map("total_cents")
+  paidCents            Int       @default(0) @map("paid_cents")
+  dueAt                DateTime? @map("due_at")
+  notes                String?
+  createdById          String    @map("created_by")
+  settledById          String?   @map("settled_by")
+  settledAt            DateTime? @map("settled_at")
+  settledPaymentMethod String?   @map("settled_payment_method")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  order         Order  @relation(fields: [orderId], references: [id])
+  customerUser  User?  @relation("CreditNoteCustomer", fields: [customerUserId], references: [id])
+  createdBy     User   @relation("CreditNoteCreatedBy", fields: [createdById], references: [id])
+  settledBy     User?  @relation("CreditNoteSettledBy", fields: [settledById], references: [id])
+
+  @@index([status, dueAt])
+  @@index([customerUserId])
+  @@index([createdAt])
+  @@map("credit_notes")
+}
+
+model OrderItem {
+  id             String @id @default(uuid())
+  orderId        String @map("order_id")
+  productId      String @map("product_id")
+  qty            Int
+  unitPriceCents Int    @map("unit_price_cents")
+  subtotalCents  Int    @map("subtotal_cents")
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Ticket {
+  id               String    @id @default(uuid())
+  orderId          String    @unique @map("order_id")
+  codeShort        String    @unique @map("code_short")
+  tokenHash        String    @unique @map("token_hash")
+  expiresAt        DateTime  @map("expires_at")
+  consumedAt       DateTime? @map("consumed_at")
+  consumedByUserId String?   @map("consumed_by_user_id")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  order          Order @relation(fields: [orderId], references: [id])
+  consumedByUser User? @relation("ConsumedBy", fields: [consumedByUserId], references: [id])
+
+  @@map("tickets")
+}
+
+model CashSession {
+  id               String    @id @default(uuid())
+  openedById       String    @map("opened_by")
+  openedAt         DateTime  @default(now()) @map("opened_at")
+  openingCashCents Int       @map("opening_cash_cents")
+  closedById       String?   @map("closed_by")
+  closedAt         DateTime? @map("closed_at")
+  closingCashCents Int?      @map("closing_cash_cents")
+  countedCashCents Int?      @map("counted_cash_cents")
+  cashDifferenceCents Int?   @map("cash_difference_cents")
+  notes            String?
+
+  openedBy  User           @relation("OpenedBy", fields: [openedById], references: [id])
+  closedBy  User?          @relation("ClosedBy", fields: [closedById], references: [id])
+  movements CashMovement[]
+
+  @@map("cash_sessions")
+}
+
+model CashMovement {
+  id               String   @id @default(uuid())
+  cashSessionId    String   @map("cash_session_id")
+  type             String
+  amountCents      Int      @map("amount_cents")
+  method           String
+  referenceOrderId String?  @map("reference_order_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  cashSession    CashSession @relation(fields: [cashSessionId], references: [id])
+  referenceOrder Order?      @relation(fields: [referenceOrderId], references: [id])
+
+  @@map("cash_movements")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorUserId String?  @map("actor_user_id")
+  action      String
+  entity      String
+  entityId    String?  @map("entity_id")
+  payloadJson String?  @map("payload_json")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorUserId], references: [id])
+
+  @@index([createdAt])
+  @@index([actorUserId])
+  @@index([entity, entityId])
+  @@map("audit_logs")
+}

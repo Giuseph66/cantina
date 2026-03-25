@@ -1,0 +1,682 @@
+.page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+}
+
+.loading {
+    min-height: 60vh;
+    display: grid;
+    place-items: center;
+    color: var(--text-muted);
+    font-weight: 800;
+}
+
+.shell {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 1120px;
+}
+
+.notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1rem 1.1rem;
+    border-radius: 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.5;
+    border: 1px solid transparent;
+}
+
+.noticeWarning {
+    background: #fff6da;
+    border-color: #f4d27a;
+    color: #8b5e09;
+}
+
+.noticeConsumed {
+    background: #fff2e1;
+    border-color: #efbf72;
+    color: #9a5a00;
+}
+
+.heroCard,
+.card,
+.sideCard,
+.actionCard,
+.errorCard {
+    background: #fff;
+    border: 1px solid var(--glass-border);
+    border-radius: 1.6rem;
+    box-shadow: var(--shadow-md);
+}
+
+.heroCard {
+    padding: 1.6rem;
+    background:
+        radial-gradient(circle at top right, rgba(212, 163, 115, 0.16), transparent 30%),
+        linear-gradient(180deg, #fff 0%, #fffaf5 100%);
+}
+
+.heroIntro {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.eyebrow {
+    display: inline-block;
+    margin-bottom: 0.45rem;
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+.ticketCode {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    color: var(--primary);
+}
+
+.heroText {
+    margin: 0.65rem 0 0;
+    max-width: 42rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.badgeRow {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.6rem;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 2.2rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.badgeStatus {
+    background: rgba(93, 64, 55, 0.08);
+    color: var(--primary);
+}
+
+.badgePayment {
+    background: rgba(212, 163, 115, 0.18);
+    color: #8a5d2e;
+}
+
+.heroGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 0.75fr));
+    gap: 1rem;
+}
+
+.customerCard,
+.metricCard {
+    border-radius: 1.2rem;
+    border: 1px solid rgba(93, 64, 55, 0.08);
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.customerCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+}
+
+.metricCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 1rem 1.1rem;
+}
+
+.metricCard strong {
+    font-size: 1.35rem;
+    color: var(--primary);
+}
+
+.metricCard span:last-child {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.avatar {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #0fb77b 0%, #089669 100%);
+    color: #fff;
+    font-size: 1.35rem;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+
+.infoLabel {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+.userName {
+    margin: 0.28rem 0 0.15rem;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.userEmail {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.contentGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.8fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.card,
+.sideCard,
+.actionCard {
+    padding: 1.5rem;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.2rem;
+}
+
+.sectionTitle {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.05;
+    color: var(--primary);
+    letter-spacing: -0.04em;
+}
+
+.sectionIcon {
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+}
+
+.itemsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.itemRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.05rem;
+    border-radius: 1rem;
+    background: #fbf7f2;
+    border: 1px solid rgba(93, 64, 55, 0.06);
+}
+
+.itemMain {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.qty {
+    flex-shrink: 0;
+    min-width: 2.2rem;
+    height: 2.2rem;
+    padding: 0 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(212, 163, 115, 0.18);
+    color: #8a5d2e;
+    font-weight: 900;
+}
+
+.productName {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.itemMeta {
+    margin-top: 0.2rem;
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.itemSubtotal {
+    color: var(--primary);
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.sidePanel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.summaryList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.summaryRow strong {
+    color: var(--text-main);
+}
+
+.actionCard {
+    background: linear-gradient(180deg, #fff 0%, #fdf7ef 100%);
+    border-color: rgba(212, 163, 115, 0.22);
+}
+
+.actionLead {
+    margin-bottom: 0.4rem;
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: -0.03em;
+}
+
+.actionText {
+    margin: 0 0 1.25rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.btnSecondary,
+.btnPrimary,
+.backBtnWrapper {
+    width: 100%;
+    min-height: 3.6rem;
+    border: none;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.btnSecondary {
+    background: linear-gradient(135deg, #c88735 0%, #a85f10 100%);
+    color: #fff;
+    box-shadow: 0 14px 28px rgba(168, 95, 16, 0.2);
+}
+
+.btnPrimary {
+    background: linear-gradient(135deg, #13c483 0%, #09a56d 100%);
+    color: #fff;
+    box-shadow: 0 14px 28px rgba(9, 165, 109, 0.22);
+}
+
+.btnConsumed {
+    background: linear-gradient(135deg, #f0ad31 0%, #e08c12 100%);
+    box-shadow: 0 14px 28px rgba(224, 140, 18, 0.22);
+}
+
+.btnPrimary:hover:not(:disabled),
+.btnSecondary:hover:not(:disabled),
+.backBtnWrapper:hover {
+    transform: translateY(-2px);
+}
+
+.btnPrimary:disabled,
+.btnSecondary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.backBtnWrapper {
+    margin-top: 0.75rem;
+    background: var(--primary);
+    color: #fff;
+}
+
+.blockedNotice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.75rem;
+    text-align: left;
+    color: #991b1b;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.btnBack {
+    width: 100%;
+    min-height: 3.2rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btnBack:hover { background: var(--glass-border); }
+
+.actionGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.9rem;
+}
+
+.inlineForm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba(93, 64, 55, 0.14);
+}
+
+.inlineField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.inlineField span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.inlineField input,
+.inlineField textarea {
+    width: 100%;
+    border: 1px solid rgba(93, 64, 55, 0.12);
+    border-radius: 0.95rem;
+    background: #fff;
+    padding: 0.85rem 0.95rem;
+    outline: none;
+    font: inherit;
+    resize: vertical;
+}
+
+.errorCard {
+    max-width: 32rem;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.errorTitle {
+    margin: 1rem 0 0.35rem;
+    color: var(--primary);
+    font-size: 1.55rem;
+}
+
+.errorMsg {
+    margin: 0;
+    color: var(--text-muted);
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+@media (max-width: 1100px) {
+    .contentGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .heroGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .shell {
+        gap: 0.95rem;
+    }
+
+    .heroCard,
+    .card,
+    .sideCard,
+    .actionCard,
+    .errorCard {
+        padding: 1rem;
+        border-radius: 1.15rem;
+        box-shadow: 0 14px 28px rgba(93, 64, 55, 0.08);
+    }
+
+    .heroCard {
+        background:
+            radial-gradient(circle at top right, rgba(212, 163, 115, 0.22), transparent 34%),
+            linear-gradient(180deg, #fff 0%, #fff8ef 100%);
+    }
+
+    .heroIntro,
+    .sectionHeader,
+    .itemRow,
+    .summaryRow {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .heroIntro {
+        gap: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .badgeRow {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .badge {
+        min-height: 2rem;
+        font-size: 0.74rem;
+        padding: 0.38rem 0.72rem;
+    }
+
+    .ticketCode {
+        font-size: 2.25rem;
+    }
+
+    .heroText {
+        margin-top: 0.55rem;
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    .customerCard,
+    .metricCard {
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .customerCard {
+        align-items: flex-start;
+        padding: 0.95rem;
+    }
+
+    .metricCard {
+        padding: 0.95rem;
+    }
+
+    .metricCard strong {
+        font-size: 1.2rem;
+    }
+
+    .avatar {
+        width: 2.85rem;
+        height: 2.85rem;
+        font-size: 1.12rem;
+    }
+
+    .userName {
+        font-size: 1rem;
+    }
+
+    .userEmail {
+        font-size: 0.84rem;
+    }
+
+    .contentGrid {
+        gap: 0.95rem;
+    }
+
+    .sidePanel {
+        order: -1;
+    }
+
+    .sideCard {
+        display: none;
+    }
+
+    .actionCard {
+        position: sticky;
+        bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+        z-index: 5;
+        border-color: rgba(212, 163, 115, 0.28);
+        box-shadow: 0 18px 36px rgba(168, 95, 16, 0.12);
+    }
+
+    .actionLead {
+        font-size: 1.02rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .actionText {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .itemRow {
+        gap: 0.85rem;
+        padding: 0.9rem;
+        background: linear-gradient(180deg, #fffdf9 0%, #f9f4ed 100%);
+    }
+
+    .itemSubtotal {
+        align-self: flex-end;
+        font-size: 0.95rem;
+    }
+
+    .qty {
+        min-width: 2rem;
+        height: 2rem;
+        font-size: 0.88rem;
+    }
+
+    .productName {
+        font-size: 0.95rem;
+    }
+
+    .summaryList {
+        gap: 0.7rem;
+    }
+
+    .summaryRow {
+        width: 100%;
+        padding: 0.85rem 0.95rem;
+        background: var(--bg-main);
+        border: 1px solid rgba(93, 64, 55, 0.08);
+        border-radius: 0.95rem;
+    }
+
+    .btnSecondary,
+    .btnPrimary,
+    .backBtnWrapper,
+    .btnBack {
+        min-height: 3.4rem;
+        font-size: 0.95rem;
+        border-radius: 0.95rem;
+    }
+
+    .blockedNotice {
+        padding: 0.85rem;
+        border-radius: 0.95rem;
+        font-size: 0.82rem;
+    }
+
+    .inlineForm {
+        gap: 0.75rem;
+        margin-top: 0.85rem;
+        padding-top: 0.85rem;
+    }
+
+    .inlineField input,
+    .inlineField textarea {
+        border-radius: 0.9rem;
+        padding: 0.8rem 0.9rem;
+    }
+
+    .errorTitle {
+        font-size: 1.35rem;
+    }
+
+    .errorMsg {
+        font-size: 0.92rem;
+    }
+
+    .actionGrid {
+        grid-template-columns: 1fr;
+    }
+}

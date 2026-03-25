@@ -1,0 +1,355 @@
+.page {
+    min-height: 100vh;
+    padding: 2.5rem 1.25rem 4rem;
+    max-width: 1024px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding: 1rem 0.5rem 0.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 950;
+    color: var(--primary);
+    letter-spacing: -0.05em;
+    margin: 0;
+}
+
+.titleBlock {
+    text-align: center;
+}
+
+.subtitle {
+    margin: 0.35rem 0 0;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.iconBtn {
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+.iconBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+.emptyState {
+    background: white;
+    border: 2px dashed var(--glass-border);
+    border-radius: 2rem;
+    padding: 4rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.emptyState h2 {
+    color: var(--primary);
+    font-weight: 900;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.emptyState p {
+    color: var(--text-dim);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.primaryBtn {
+    background: var(--primary);
+    border: none;
+    color: white;
+    border-radius: var(--radius-full);
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+}
+
+.secondaryBtn {
+    background: white;
+    border: 1px solid var(--glass-border);
+    color: var(--primary);
+    border-radius: var(--radius-full);
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.emptyActions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.guestBanner {
+    padding: 1rem 1.1rem;
+    border-radius: 1rem;
+    background: rgba(212, 163, 115, 0.12);
+    border: 1px solid rgba(212, 163, 115, 0.18);
+    color: var(--primary);
+    font-size: 0.88rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.feed {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.liveDot {
+    width: 8px;
+    height: 8px;
+    background: #059669;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.2);
+    animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+    0% {
+        box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(5, 150, 105, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(5, 150, 105, 0);
+    }
+}
+
+.list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.card {
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+}
+
+.cardActive {
+    border-color: var(--accent);
+    box-shadow: 0 8px 30px var(--accent-bg);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--secondary);
+}
+
+.accentBar {
+    width: 6px;
+    flex-shrink: 0;
+}
+
+.cardInner {
+    flex: 1;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.cardTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--glass-border);
+    padding-bottom: 1rem;
+}
+
+.cardDate {
+    color: var(--text-dim);
+    font-size: 0.875rem;
+    font-weight: 800;
+}
+
+.cardTotal {
+    color: var(--primary);
+    font-weight: 900;
+    font-size: 1.125rem;
+}
+
+.itemsBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.itemRow {
+    color: var(--text-main);
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.qty {
+    color: var(--text-dim);
+    font-weight: 900;
+}
+
+.itemName {
+    flex: 1;
+}
+
+.statusRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.paymentChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-dim);
+    background: var(--bg-main);
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+}
+
+.statusSublabel {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding-top: 0.5rem;
+}
+
+.qrCta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.875rem;
+    border: 1px dashed;
+    margin-top: 0.5rem;
+    transition: var(--transition-fast);
+}
+
+.qrCta:hover {
+    background: var(--bg-main) !important;
+}
+
+.ticketCode {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-main);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+}
+
+.ticketCodeLabel {
+    color: var(--text-dim);
+    font-weight: 800;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ticketCodeValue {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: 0.1em;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    color: var(--text-dim);
+    font-weight: 900;
+    font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 1.5rem 1rem 3rem;
+    }
+
+    .list {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+}

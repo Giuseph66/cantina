@@ -1,0 +1,1343 @@
+@keyframes sheetSlideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+.page {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.95fr);
+    gap: 1.5rem;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.catalogSection,
+.salePanel {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(93, 64, 55, 0.08);
+    border-radius: 1.5rem;
+    box-shadow: 0 24px 60px rgba(93, 64, 55, 0.08);
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.catalogSection {
+    padding: 1.5rem;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.toolbarTop {
+    display: flex;
+    gap: 0.85rem;
+    align-items: center;
+}
+
+.searchField {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1rem;
+    min-height: 3.5rem;
+    border-radius: 1rem;
+    background: #fff;
+    border: 1px solid rgba(93, 64, 55, 0.1);
+}
+
+.searchField input {
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    font-size: 0.98rem;
+}
+
+.viewToggle {
+    min-height: 3.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(93, 64, 55, 0.12);
+    background: #fff;
+    color: var(--text-muted);
+    padding: 0 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.viewToggleActive {
+    background: rgba(212, 163, 115, 0.12);
+    color: var(--primary);
+    border-color: rgba(212, 163, 115, 0.28);
+}
+
+.categoryTabs {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+}
+
+.categoryTab {
+    border: 1px solid rgba(93, 64, 55, 0.12);
+    background: #fff;
+    color: var(--text-muted);
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.categoryTabActive {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.productGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.productGridCompact {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.85rem;
+}
+
+.productCard {
+    border: 1px solid rgba(93, 64, 55, 0.08);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 243, 236, 0.9));
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.productCardCompact {
+    min-height: auto;
+}
+
+.productCardDisabled {
+    opacity: 0.6;
+    filter: grayscale(0.3);
+}
+
+.productImageWrap {
+    position: relative;
+    aspect-ratio: 1.15 / 1;
+    background: linear-gradient(135deg, rgba(93, 64, 55, 0.14), rgba(212, 163, 115, 0.18));
+}
+
+.productImage,
+.productImageFallback {
+    width: 100%;
+    height: 100%;
+}
+
+.productImage {
+    display: block;
+    object-fit: cover;
+}
+
+.productImageFallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(93, 64, 55, 0.42);
+}
+
+.productCategory {
+    position: absolute;
+    top: 0.9rem;
+    left: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--primary);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.productBody {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    flex: 1;
+}
+
+.productName {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.productCategoryInline {
+    display: inline-flex;
+    margin-bottom: 0.45rem;
+    padding: 0.32rem 0.62rem;
+    border-radius: 999px;
+    background: rgba(212, 163, 115, 0.12);
+    color: var(--primary);
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.productDescription {
+    margin: 0.45rem 0 0;
+    color: var(--text-muted);
+    line-height: 1.45;
+    font-size: 0.92rem;
+}
+
+.productMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.productPrice {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--secondary);
+}
+
+.stockInfo {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.productActions {
+    margin-top: auto;
+}
+
+.addBtn,
+.qtyControl button,
+.compactQty button,
+.removeBtn,
+.paymentCard,
+.modeTab,
+.customerOption,
+.checkoutBtn {
+    transition: 180ms ease;
+}
+
+.addBtn {
+    width: 100%;
+    border: none;
+    border-radius: 0.95rem;
+    background: var(--primary);
+    color: #fff;
+    min-height: 2.9rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.addBtn:disabled {
+    cursor: not-allowed;
+    background: #c7b7ad;
+}
+
+.qtyControl,
+.compactQty {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgba(93, 64, 55, 0.12);
+}
+
+.qtyControl {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.qtyControl span,
+.compactQty span {
+    font-weight: 800;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.qtyControl button,
+.compactQty button,
+.removeBtn {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: none;
+    background: rgba(93, 64, 55, 0.08);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.salePanel {
+    position: sticky;
+    top: 5.5rem;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 7rem);
+    min-height: 0;
+    overflow: hidden;
+}
+
+.saleHeader {
+    padding: 1.35rem 1.35rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(93, 64, 55, 0.08);
+    box-sizing: border-box;
+}
+
+.saleTitle {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 1.2rem;
+    color: var(--primary);
+}
+
+.saleSubtitle {
+    margin: 0.35rem 0 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+}
+
+.mobileCatalogEntry,
+.mobilePickerOverlay,
+.checkoutConfirmOverlay {
+    display: none;
+}
+
+.mobileViewToggle {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+}
+
+.totalBadge {
+    align-self: flex-start;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    background: rgba(212, 163, 115, 0.14);
+    color: var(--secondary);
+    font-weight: 900;
+}
+
+.saleBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.cartList {
+    padding: 1.25rem 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    box-sizing: border-box;
+}
+
+.emptyState {
+    border: 1px dashed rgba(93, 64, 55, 0.18);
+    border-radius: 1.2rem;
+    padding: 2rem 1.25rem;
+    text-align: center;
+    color: var(--text-dim);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    align-items: center;
+}
+
+.emptyState p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.cartRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem;
+    padding: 0.95rem 1rem;
+    border-radius: 1rem;
+    background: rgba(248, 243, 236, 0.85);
+}
+
+.cartInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.cartInfo strong {
+    color: var(--primary);
+}
+
+.cartInfo span {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+}
+
+.cartActions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.block {
+    padding: 0 1.35rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    box-sizing: border-box;
+}
+
+.blockHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.paymentGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.paymentCard {
+    text-align: left;
+    border: 1px solid rgba(93, 64, 55, 0.12);
+    background: #fff;
+    border-radius: 1rem;
+    padding: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    color: var(--text-muted);
+}
+
+.paymentCard strong {
+    color: var(--primary);
+}
+
+.paymentCard span {
+    font-size: 0.83rem;
+    line-height: 1.35;
+}
+
+.paymentCardActive {
+    border-color: var(--secondary);
+    background: rgba(212, 163, 115, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(212, 163, 115, 0.25);
+}
+
+.modeTabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.modeTab {
+    min-height: 2.9rem;
+    border-radius: 0.95rem;
+    border: 1px solid rgba(93, 64, 55, 0.12);
+    background: #fff;
+    color: var(--text-muted);
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.modeTabActive {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.customerPanel,
+.creditMetaGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.field span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.field input,
+.field textarea {
+    width: 100%;
+    border: 1px solid rgba(93, 64, 55, 0.12);
+    border-radius: 0.95rem;
+    background: #fff;
+    padding: 0.9rem 1rem;
+    outline: none;
+    font: inherit;
+    resize: vertical;
+}
+
+.customerList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.customerOption {
+    border: 1px solid rgba(93, 64, 55, 0.1);
+    background: #fff;
+    border-radius: 0.95rem;
+    padding: 0.85rem 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.customerOption strong {
+    color: var(--primary);
+}
+
+.customerOption span,
+.customerHint {
+    color: var(--text-dim);
+    font-size: 0.86rem;
+}
+
+.customerOptionActive {
+    border-color: var(--secondary);
+    background: rgba(212, 163, 115, 0.12);
+}
+
+.footer {
+    margin-top: auto;
+    padding: 1.2rem 1.35rem 1.35rem;
+    border-top: 1px solid rgba(93, 64, 55, 0.08);
+    background: linear-gradient(180deg, rgba(248, 243, 236, 0.4), rgba(248, 243, 236, 0.88));
+    border-bottom-left-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    box-shadow: 0 -16px 32px rgba(93, 64, 55, 0.08);
+    box-sizing: border-box;
+}
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.summaryGrid div {
+    border-radius: 1rem;
+    background: #fff;
+    border: 1px solid rgba(93, 64, 55, 0.08);
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.summaryGrid span {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.summaryGrid strong {
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.checkoutBtn {
+    width: 100%;
+    min-height: 3.5rem;
+    border: none;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--primary), #7a4b38);
+    color: #fff;
+    font-size: 1.02rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.checkoutBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.checkoutConfirmOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 15, 16, 0.45);
+    backdrop-filter: blur(6px);
+    z-index: 1200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.checkoutConfirmOverlayOpen {
+    display: flex;
+}
+
+.checkoutConfirmModal {
+    width: min(100%, 28rem);
+    background: linear-gradient(180deg, #fff 0%, #fffaf6 100%);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(93, 64, 55, 0.08);
+    box-shadow: 0 24px 60px rgba(93, 64, 55, 0.18);
+    overflow: hidden;
+}
+
+.checkoutConfirmHeader {
+    padding: 1.25rem 1.25rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(93, 64, 55, 0.08);
+}
+
+.checkoutConfirmTitle {
+    margin: 0;
+    color: var(--primary);
+    font-size: 1.3rem;
+}
+
+.checkoutConfirmSubtitle {
+    margin: 0.35rem 0 0;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-size: 0.92rem;
+}
+
+.checkoutConfirmBody {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.checkoutSummaryCard {
+    border: 1px solid rgba(93, 64, 55, 0.08);
+    border-radius: 1.1rem;
+    background: #fff;
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.checkoutSummaryRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--text-muted);
+}
+
+.checkoutSummaryRow strong {
+    color: var(--primary);
+    text-align: right;
+}
+
+.checkoutConfirmNotice {
+    border-radius: 1rem;
+    background: rgba(212, 163, 115, 0.12);
+    color: var(--primary);
+    padding: 0.9rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.checkoutConfirmActions {
+    padding: 0 1.25rem 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.checkoutCancelBtn,
+.checkoutConfirmBtn {
+    min-height: 3.2rem;
+    border-radius: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.checkoutCancelBtn {
+    border: 1px solid rgba(93, 64, 55, 0.12);
+    background: #fff;
+    color: var(--primary);
+}
+
+.checkoutConfirmBtn {
+    border: none;
+    background: linear-gradient(135deg, var(--primary), #7a4b38);
+    color: #fff;
+}
+
+.checkoutCancelBtn:disabled,
+.checkoutConfirmBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 1100px) {
+    .page {
+        grid-template-columns: 1fr;
+    }
+
+    .catalogSection {
+        display: none;
+    }
+
+    .salePanel {
+        position: static;
+        max-height: none;
+    }
+
+    .saleBody {
+        overflow: visible;
+    }
+
+    .footer {
+        position: static;
+        box-shadow: none;
+    }
+
+    .mobileCatalogEntry {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        padding: 0 1.35rem 1.1rem;
+        border-bottom: 1px solid rgba(93, 64, 55, 0.08);
+    }
+
+    .mobileCatalogBtn {
+        width: 100%;
+        min-height: 3.35rem;
+        border: none;
+        border-radius: 1rem;
+        background: linear-gradient(135deg, var(--primary), #7a4b38);
+        color: #fff;
+        font-weight: 900;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .mobileCatalogHint {
+        color: var(--text-dim);
+        font-size: 0.84rem;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .mobilePickerOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 15, 16, 0.48);
+        backdrop-filter: blur(6px);
+        z-index: 1100;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .mobilePickerOverlayOpen {
+        display: flex;
+    }
+
+    .mobilePickerSheet {
+        width: min(100%, 42rem);
+        max-height: min(88dvh, 920px);
+        background: linear-gradient(180deg, #fff 0%, #fffaf6 100%);
+        border-radius: 1.6rem 1.6rem 0 0;
+        border: 1px solid rgba(93, 64, 55, 0.08);
+        box-shadow: 0 -24px 60px rgba(93, 64, 55, 0.18);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .mobilePickerHeader {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.1rem 1rem 0.9rem;
+        border-bottom: 1px solid rgba(93, 64, 55, 0.08);
+    }
+
+    .mobilePickerEyebrow {
+        display: block;
+        color: var(--text-dim);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+    }
+
+    .mobilePickerTitle {
+        margin: 0;
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+
+    .mobilePickerClose {
+        width: 2.5rem;
+        height: 2.5rem;
+        border: 1px solid rgba(93, 64, 55, 0.12);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .mobilePickerToolbar {
+        padding: 0.9rem 1rem 0.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        border-bottom: 1px solid rgba(93, 64, 55, 0.08);
+    }
+
+    .mobileProductList {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .mobileProductGrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.7rem;
+        align-content: start;
+    }
+
+    .mobileProductCard {
+        border: 1px solid rgba(93, 64, 55, 0.1);
+        border-radius: 1.1rem;
+        background: #fff;
+        padding: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.9rem;
+    }
+
+    .mobileProductCardGrid {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        min-height: 14rem;
+        padding: 0.7rem;
+        border-color: rgba(93, 64, 55, 0.08);
+        background: linear-gradient(180deg, #fff 0%, #fff9f3 100%);
+        box-shadow: 0 12px 26px rgba(93, 64, 55, 0.12);
+    }
+
+    .mobileProductCardGridWithImage {
+        border-color: rgba(93, 64, 55, 0.14);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+
+    .mobileGridStockBadge {
+        position: absolute;
+        top: 3rem;
+        right: 0.1rem;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 0.5rem;
+        justify-content: center;
+        background-color: #fff;
+        border-radius: 9px;
+        color: #000000;
+        font-size: 0.82rem;
+        font-weight: 900;
+        box-shadow: 0 8px 18px rgba(23, 16, 13, 0.16);
+    }
+
+    .mobileProductMain {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .mobileProductTop {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    .mobileProductName {
+        margin: 0;
+        color: var(--primary);
+        font-size: 1rem;
+        text-align: justify;
+        justify-content: space-between;
+
+    }
+
+    .mobileProductCardGrid .mobileProductName {
+        font-size: 0.96rem;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        width: 90%;
+    }
+
+    .mobileProductMeta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        color: var(--text-dim);
+        font-size: 0.82rem;
+    }
+
+    .mobileProductMeta strong {
+        color: var(--secondary);
+        font-size: 1rem;
+    }
+
+    .mobileProductCardGrid .mobileProductMeta {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+    }
+
+    .mobileProductCardGrid .mobileProductMain,
+    .mobileProductCardGrid .mobileProductActions {
+        position: relative;
+        z-index: 1;
+        padding: 0;
+        border: none;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .mobileProductCardGrid .mobileProductMain {
+        gap: 0.55rem;
+    }
+
+    .mobileProductCardGrid .mobileProductActions {
+        margin-top: auto;
+        width: 100%;
+    }
+
+    .mobileProductCardGridWithImage .mobileProductMain,
+    .mobileProductCardGridWithImage .mobileProductActions {
+        border: none;
+    }
+
+    .mobileProductCardGridWithImage .mobileProductName {
+        color: #432821;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .mobileProductCardGridWithImage .mobileProductMeta {
+        color: #5b3a30;
+    }
+
+    .mobileProductCardGridWithImage .mobileProductMeta strong {
+        color: #b36b22;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .mobileProductActions {
+        width: 8.5rem;
+        flex-shrink: 0;
+    }
+
+    .mobileProductCardGrid .mobileProductActions {
+        width: 100%;
+    }
+
+    .mobileProductCardGrid .addBtn,
+    .mobileProductCardGrid .qtyControl {
+        width: 100%;
+        min-height: 2.9rem;
+    }
+
+    .mobileProductCardGrid .productCategoryInline {
+        margin-bottom: 0;
+        padding: 0.28rem 0.55rem;
+        font-size: 0.64rem;
+        letter-spacing: 0.06em;
+    }
+
+    .mobileProductCardGrid .addBtn {
+        font-size: 0.92rem;
+    }
+
+    .mobileGridAddBtn {
+        width: 100%;
+        padding: 0.6rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        background: rgba(255, 248, 240, 0.9);
+        color: #7a3e14;
+        border: 1.5px solid rgba(200, 137, 74, 0.35);
+        border-radius: 0.75rem;
+        backdrop-filter: blur(4px);
+    }
+
+    .mobileGridAddBtn:hover:not(:disabled) {
+        background: rgba(200, 137, 74, 0.18);
+        border-color: #c8894a;
+    }
+
+    .mobileGridPriceLabel,
+    .mobileGridQtyValue {
+        border-radius: 0.9rem;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        box-shadow: 0 4px 10px rgba(23, 16, 13, 0.18);
+    }
+
+    .mobileGridNameLabel {
+        display: inline-block;
+        align-self: flex-start;
+        padding: 0.28rem 0.6rem;
+        background: rgba(255, 248, 240, 0.86);
+        font-size: 0.8rem;
+        border-radius: 0.6rem;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        /* sombra curta — não vaza para baixo */
+        box-shadow: 0 2px 6px rgba(23, 16, 13, 0.14);
+        max-width: 88%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mobileGridPriceLabel {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2rem;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.78rem;
+        font-weight: 800;
+        background: rgba(255, 253, 250, 0.84);
+    }
+
+    .mobileGridPriceLabel {
+        color: #b36b22;
+    }
+
+    .mobileGridQtyControl {
+        width: 100%;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 2.45rem minmax(0, 1fr) 2.45rem;
+        align-items: center;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        gap: 0.55rem;
+    }
+
+    .mobileGridQtyControl button {
+        width: 2.45rem;
+        height: 2.45rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 248, 240, 0.82);
+        backdrop-filter: blur(4px);
+        border-radius: 0.6rem;
+        box-shadow: 0 2px 8px rgba(17, 12, 10, 0.18);
+        color: #5b3a20;
+    }
+
+    .mobileGridQtyControl button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    .mobileGridQtyValue {
+        flex: 1;
+        min-width: 0;
+        min-height: 2.45rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.35rem 0.5rem;
+        background: rgba(255, 248, 240, 0.82);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 0.6rem;
+        box-shadow: 0 2px 8px rgba(17, 12, 10, 0.18);
+        color: #3d1f0a;
+        font-size: 1rem;
+        font-weight: 900;
+    }
+
+    .mobilePickerEmpty {
+        border: 1px dashed rgba(93, 64, 55, 0.18);
+        border-radius: 1.1rem;
+        padding: 1.1rem;
+        text-align: center;
+        color: var(--text-dim);
+        font-weight: 700;
+    }
+
+    .mobilePickerFooter {
+        padding: 0.95rem 1rem calc(0.95rem + env(safe-area-inset-bottom));
+        border-top: 1px solid rgba(93, 64, 55, 0.08);
+        background: rgba(255, 255, 255, 0.96);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .mobilePickerSummary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        color: var(--text-muted);
+        font-weight: 800;
+    }
+
+    .mobilePickerSummary strong {
+        color: var(--primary);
+        font-size: 1.05rem;
+    }
+
+    .mobilePickerDone {
+        width: 100%;
+        min-height: 3.3rem;
+        border: none;
+        border-radius: 1rem;
+        background: rgba(212, 163, 115, 0.18);
+        color: var(--primary);
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .checkoutConfirmOverlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .checkoutConfirmModal {
+        width: 100%;
+        border-radius: 1.5rem 1.5rem 0 0;
+        max-height: 92dvh;
+    }
+
+    .checkoutConfirmActions {
+        grid-template-columns: 1fr;
+        padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    }
+
+    @media (max-width: 389px) {
+        .mobileProductGrid {
+            grid-template-columns: 1fr;
+        }
+
+        .mobileProductCardGrid {
+            min-height: auto;
+        }
+    }
+}
+
+@media (max-width: 720px) {
+    .page {
+        gap: 1rem;
+    }
+
+    .mobilePickerOverlay {
+        align-items: flex-end;
+    }
+
+    .mobilePickerSheet {
+        width: 100%;
+        max-width: none;
+        max-height: 95dvh;
+        height: 95dvh;
+        border-radius: 1.6rem 1.6rem 0 0;
+        border: none;
+        box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+        animation: sheetSlideUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .mobilePickerHeader {
+        padding-top: calc(1rem + env(safe-area-inset-top));
+    }
+
+    .mobilePickerToolbar {
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+    }
+
+    .mobileProductList {
+        padding: 0.9rem;
+    }
+
+    .mobilePickerFooter {
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+    }
+
+    .catalogSection,
+    .salePanel {
+        border-radius: 1.2rem;
+    }
+
+    .catalogSection {
+        padding: 1rem;
+    }
+
+    .toolbarTop {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .viewToggle {
+        width: 100%;
+    }
+
+    .toolbarTop .viewToggle {
+        flex: 1;
+    }
+
+    .saleHeader,
+    .cartList,
+    .block,
+    .footer {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .saleHeader {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .totalBadge {
+        align-self: stretch;
+        text-align: center;
+    }
+
+    .summaryGrid,
+    .modeTabs {
+        grid-template-columns: 1fr;
+    }
+
+    .paymentGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .paymentCard {
+        min-height: 6.1rem;
+        padding: 0.85rem 0.8rem;
+    }
+
+    .paymentCard strong {
+        font-size: 0.95rem;
+    }
+
+    .paymentCard span {
+        font-size: 0.78rem;
+    }
+
+    .productGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .productGridCompact {
+        grid-template-columns: 1fr;
+    }
+
+    .cartRow {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cartActions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .checkoutBtn {
+        min-height: 3.9rem;
+        font-size: 0.98rem;
+    }
+}

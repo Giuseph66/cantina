@@ -1,0 +1,357 @@
+/* ── Toolbar ─────────────────────────────────────────────────────────── */
+.toolbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.refreshBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: white;
+    border: 1.5px solid #e8ddd5;
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #5d4037;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.refreshBtn:hover {
+    border-color: #c8813a;
+    color: #c8813a;
+}
+
+.refreshBtn.spinning svg {
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Tabs de status ──────────────────────────────────────────────────── */
+.tabs {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    margin-bottom: 1.25rem;
+    scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: white;
+    border: 1.5px solid #e8ddd5;
+    border-radius: 8px;
+    padding: 0.45rem 0.875rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #78716c;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+}
+
+.tab:hover { border-color: #c8813a; color: #c8813a; }
+
+.tabActive {
+    background: #3e2723;
+    border-color: #3e2723;
+    color: white;
+}
+
+.tabCount {
+    background: rgba(255,255,255,0.2);
+    color: inherit;
+    border-radius: 999px;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.tabActive .tabCount {
+    background: rgba(255,255,255,0.25);
+}
+
+/* ── Stats ───────────────────────────────────────────────────────────── */
+.statsBar {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}
+
+/* ── Lista de pedidos ────────────────────────────────────────────────── */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* ── Card de pedido ──────────────────────────────────────────────────── */
+.card {
+    background: white;
+    border: 1.5px solid #f1e9df;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(93, 64, 55, 0.05);
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(93, 64, 55, 0.1);
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid #f5ede6;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.cardHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.orderCode {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #94a3b8;
+    font-family: monospace;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.userName {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #3e2723;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userEmail {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cardHeaderRight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.statusBadge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.channelBadge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* Status colors */
+.statusCREATED    { background: #fef3c7; color: #92400e; }
+.statusCONFIRMED  { background: #dbeafe; color: #1d4ed8; }
+.statusPAID       { background: #ede9fe; color: #6d28d9; }
+.statusIN_PREP    { background: #ffedd5; color: #c2410c; }
+.statusREADY      { background: #d1fae5; color: #065f46; }
+.statusPICKED_UP  { background: #f0fdf4; color: #16a34a; }
+.statusCANCELLED  { background: #fee2e2; color: #dc2626; }
+.statusEXPIRED    { background: #f1f5f9; color: #64748b; }
+
+/* ── Items ───────────────────────────────────────────────────────────── */
+.cardItems {
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.itemThumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid #f1e9df;
+}
+
+.itemThumbPlaceholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    background: #f5ede6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #c4a882;
+}
+
+.itemName {
+    flex: 1;
+    font-size: 0.85rem;
+    color: #3e2723;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.itemQty {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.itemPrice {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #5d4037;
+    white-space: nowrap;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
+.cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #f5ede6;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.footerMeta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.total {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #c8813a;
+}
+
+.payMethod {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    color: #78716c;
+    font-weight: 600;
+}
+
+.time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.ticketCode {
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    letter-spacing: 0.1em;
+}
+
+/* ── Ações ───────────────────────────────────────────────────────────── */
+.actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.45rem 0.875rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.actionBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btnConfirm  { background: #dbeafe; color: #1d4ed8; }
+.btnConfirm:hover:not(:disabled)  { background: #1d4ed8; color: white; }
+
+.btnPrep     { background: #ffedd5; color: #c2410c; }
+.btnPrep:hover:not(:disabled)     { background: #c2410c; color: white; }
+
+.btnReady    { background: #d1fae5; color: #065f46; }
+.btnReady:hover:not(:disabled)    { background: #059669; color: white; }
+
+.btnCancel   { background: #fee2e2; color: #dc2626; }
+.btnCancel:hover:not(:disabled)   { background: #dc2626; color: white; }
+
+/* ── Empty / Loading ─────────────────────────────────────────────────── */
+.empty {
+    text-align: center;
+    padding: 5rem 1rem;
+    color: #94a3b8;
+}
+
+.emptyIcon { margin-bottom: 1rem; color: #cbd5e1; }
+.emptyText { font-size: 1rem; font-weight: 600; color: #64748b; }
+
+.loading {
+    text-align: center;
+    padding: 5rem;
+    color: #94a3b8;
+}

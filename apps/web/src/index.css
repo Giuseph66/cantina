@@ -1,0 +1,95 @@
+:root {
+    /* Color Palette - Warm Cafeteria (Premium White & Brown) */
+    --bg-main: #fdfaf7;
+    --bg-card: #ffffff;
+    --bg-surface: #ffffff;
+
+    --primary: #5d4037;
+    --primary-hover: #4e342e;
+    --primary-light: #8d6e63;
+    --primary-glow: rgba(93, 64, 55, 0.08);
+
+    --secondary: #d4a373;
+    --secondary-hover: #c69460;
+    --accent: #bc8e5c;
+
+    --text-main: #2c1810;
+    --text-muted: #5d4037;
+    --text-dim: #a1887f;
+
+    /* Natural & Sophisticated Shadows */
+    --shadow-sm: 0 2px 8px rgba(93, 64, 55, 0.04);
+    --shadow-md: 0 8px 24px rgba(93, 64, 55, 0.08);
+    --shadow-lg: 0 16px 48px rgba(93, 64, 55, 0.12);
+    --shadow-card: 0 10px 40px -10px rgba(93, 64, 55, 0.15);
+
+    /* Natural Glassmorphism (Light Theme) */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(93, 64, 55, 0.1);
+    --glass-blur: blur(12px);
+
+    /* Layout & Spacing */
+    --radius-sm: 0.625rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-full: 9999px;
+
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Dark Theme ───────────────────────────────────────────────────────────── */
+body.dark {
+    --bg-main: #0f0a08;
+    --bg-card: #1a120e;
+    --bg-surface: #1a120e;
+
+    --primary: #c4956a;
+    --primary-hover: #d4a373;
+    --primary-light: #a0785a;
+    --primary-glow: rgba(196, 149, 106, 0.12);
+
+    --secondary: #d4a373;
+    --secondary-hover: #c69460;
+    --accent: #c4956a;
+
+    --text-main: #f5ece6;
+    --text-muted: #c4956a;
+    --text-dim: #7a6458;
+
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+
+    --glass-bg: rgba(26, 18, 14, 0.85);
+    --glass-border: rgba(196, 149, 106, 0.12);
+}
+
+body.dark {
+    background-image:
+        radial-gradient(at 0% 0%, rgba(196, 149, 106, 0.04) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(93, 64, 55, 0.06) 0px, transparent 50%);
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-main);
+    background-image:
+        radial-gradient(at 0% 0%, rgba(212, 163, 115, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(93, 64, 55, 0.03) 0px, transparent 50%);
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+}
