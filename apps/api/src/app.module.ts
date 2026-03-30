@@ -16,10 +16,10 @@ import { CashModule } from './cash/cash.module';
 import { AdminModule } from './admin/admin.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { EventsModule } from './events/events.module';
-import { WebhooksModule } from './webhooks/webhooks.module';
 import { ReportsModule } from './reports/reports.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { CreditNotesModule } from './credit-notes/credit-notes.module';
+import { PaymentsModule } from './payments/payments.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
@@ -45,10 +45,10 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
         AdminModule,
         SchedulerModule,
         EventsModule,
-        WebhooksModule,
         ReportsModule,
         UploadsModule,
         CreditNotesModule,
+        PaymentsModule,
     ],
 })
 export class AppModule implements NestModule {

@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useApi } from '../../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import { format, isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
-    QrCode, Clock, CheckCircle2, AlertCircle, ArrowLeft,
+    QrCode, Clock, CheckCircle2, AlertCircle,
     ShoppingBag, XCircle, ChefHat, Hourglass, Banknote, PackageCheck,
 } from 'lucide-react';
-import { GuestOrderStorage } from '../../services/GuestOrderStorage';
 import styles from './MyOrdersPage.module.css';
 
-interface OrderItem { productId: string; product: { name: string }; qty: number; subtotalCents: number; }
+interface OrderItem { productId: string; productName: string; qty: number; subtotalCents: number; }
 interface Order {
     id: string; totalCents: number; status: string; paymentMethod: string;
     createdAt: string; items: OrderItem[];
@@ -43,8 +41,13 @@ const STATUS_MAP: Record<string, StatusConfig> = {
 };
 
 const PAYMENT_LABELS: Record<string, string> = {
-    PIX: 'Pix', ON_PICKUP: 'Pagar no balcão', CASH: 'Dinheiro', CARD: 'Cartão', INTERNAL_CREDIT: 'Notinha',
+    ONLINE: 'Pagamento online', PIX: 'Pix', ON_PICKUP: 'Pagar no balcão', CASH: 'Dinheiro', CARD: 'Cartão', INTERNAL_CREDIT: 'Notinha',
 };
+
+function getOrderTarget(order: Order) {
+    const isPendingOnlinePayment = order.status === 'CREATED' && ['ONLINE', 'PIX', 'CARD'].includes(order.paymentMethod);
+    return isPendingOnlinePayment ? `/pedido?orderId=${order.id}` : `/order/${order.id}`;
+}
 
 function OrderCard({ order, onClick }: { order: Order; onClick: () => void }) {
     const s = STATUS_MAP[order.status] ?? {
@@ -77,7 +80,7 @@ function OrderCard({ order, onClick }: { order: Order; onClick: () => void }) {
                     {order.items.map(i => (
                         <div key={i.productId} className={styles.itemRow}>
                             <span className={styles.qty}>{i.qty}×</span>
-                            <span className={styles.itemName}>{i.product.name}</span>
+                            <span className={styles.itemName}>{i.productName}</span>
                         </div>
                     ))}
                 </div>
@@ -125,24 +128,14 @@ function OrderCard({ order, onClick }: { order: Order; onClick: () => void }) {
 export default function MyOrdersPage() {
     const api = useApi();
     const navigate = useNavigate();
-    const { user } = useAuth();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadOrders() {
             try {
-                if (user) {
-                    const data = await api.get<Order[]>('/orders/my');
-                    setOrders(data);
-                    return;
-                }
-                const orderIds = await GuestOrderStorage.getOrderIds();
-                if (orderIds.length === 0) { setOrders([]); return; }
-                const guestOrders = await Promise.all(
-                    orderIds.map(id => api.get<Order>(`/orders/public/${id}`).catch(() => null)),
-                );
-                setOrders(guestOrders.filter((o): o is Order => o !== null));
+                const data = await api.get<Order[]>('/orders/my');
+                setOrders(data);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -150,7 +143,7 @@ export default function MyOrdersPage() {
             }
         }
         loadOrders();
-    }, [user]);
+    }, []);
 
     const activeOrders = orders.filter(o => STATUS_MAP[o.status]?.isActive);
     const historyOrders = orders.filter(o => !STATUS_MAP[o.status]?.isActive);
@@ -166,41 +159,28 @@ export default function MyOrdersPage() {
 
     return (
         <div className={styles.page}>
-            <header className={styles.header}>
-                <button className={styles.iconBtn} onClick={() => navigate('/menu')}>
-                    <ArrowLeft size={20} strokeWidth={2.5} />
-                </button>
-                <div className={styles.titleBlock}>
-                    <h1 className={styles.title}>Meus Pedidos</h1>
-                    <p className={styles.subtitle}>Acompanhe seus pedidos em tempo real</p>
-                </div>
+            <header className={styles.header} style={{ display: 'none' }}>
                 <div style={{ width: 40 }} />
             </header>
+
+            <div className={styles.titleBlock} style={{ marginBottom: '2rem', textAlign: 'center', padding: '0 1rem' }}>
+                <h1 className={styles.title}>Meus Pedidos</h1>
+                <p className={styles.subtitle}>Acompanhe seus pedidos em tempo real</p>
+            </div>
 
             {orders.length === 0 ? (
                 <div className={styles.emptyState}>
                     <ShoppingBag size={72} strokeWidth={1} color="var(--primary)" opacity={0.18} />
                     <h2>Nenhum pedido ainda</h2>
-                    <p>{user ? 'Sua fome ainda não deixou rastros por aqui!' : 'Você pode pedir sem login. Crie uma conta para manter tudo salvo.'}</p>
+                    <p>Sua fome ainda não deixou rastros por aqui!</p>
                     <div className={styles.emptyActions}>
                         <button className={styles.primaryBtn} onClick={() => navigate('/menu')}>
                             Ver cardápio
                         </button>
-                        {!user && (
-                            <button className={styles.secondaryBtn} onClick={() => navigate('/register')}>
-                                Criar conta
-                            </button>
-                        )}
                     </div>
                 </div>
             ) : (
                 <div className={styles.feed}>
-                    {!user && (
-                        <div className={styles.guestBanner}>
-                            Pedidos encontrados neste dispositivo. Crie uma conta para manter tudo salvo no seu perfil.
-                        </div>
-                    )}
-
                     {/* Ativos */}
                     {activeOrders.length > 0 && (
                         <section>
@@ -210,7 +190,7 @@ export default function MyOrdersPage() {
                             </h2>
                             <div className={styles.list}>
                                 {activeOrders.map(o => (
-                                    <OrderCard key={o.id} order={o} onClick={() => navigate(`/order/${o.id}`)} />
+                                    <OrderCard key={o.id} order={o} onClick={() => navigate(getOrderTarget(o))} />
                                 ))}
                             </div>
                         </section>
@@ -222,7 +202,7 @@ export default function MyOrdersPage() {
                             <h2 className={styles.sectionTitle}>Histórico</h2>
                             <div className={styles.list}>
                                 {historyOrders.map(o => (
-                                    <OrderCard key={o.id} order={o} onClick={() => navigate(`/order/${o.id}`)} />
+                                    <OrderCard key={o.id} order={o} onClick={() => navigate(getOrderTarget(o))} />
                                 ))}
                             </div>
                         </section>

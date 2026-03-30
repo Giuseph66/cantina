@@ -8,6 +8,8 @@ interface User {
     id: string;
     name: string;
     email: string;
+    cpf?: string | null;
+    phone?: string | null;
     role: 'CLIENT' | 'CASHIER' | 'KITCHEN' | 'ADMIN';
     isActive: boolean;
     createdAt: string;
@@ -29,7 +31,7 @@ const ROLE_ICONS: Record<User['role'], JSX.Element> = {
 
 type FilterTab = 'ALL' | 'CLIENT' | 'STAFF';
 
-const EMPTY_CREATE = { name: '', email: '', password: '', role: 'CASHIER' as User['role'] };
+const EMPTY_CREATE = { name: '', email: '', password: '', cpf: '', phone: '', role: 'CASHIER' as User['role'] };
 
 export default function UsersPage() {
     const api = useApi();
@@ -46,7 +48,7 @@ export default function UsersPage() {
 
     // Modal editar
     const [editUser, setEditUser] = useState<User | null>(null);
-    const [editForm, setEditForm] = useState({ name: '', email: '', role: 'CLIENT' as User['role'], password: '' });
+    const [editForm, setEditForm] = useState({ name: '', email: '', role: 'CLIENT' as User['role'], password: '', cpf: '', phone: '' });
     const [editError, setEditError] = useState('');
     const [editing, setEditing] = useState(false);
 
@@ -76,7 +78,7 @@ export default function UsersPage() {
 
     function openEdit(u: User) {
         setEditUser(u);
-        setEditForm({ name: u.name, email: u.email, role: u.role, password: '' });
+        setEditForm({ name: u.name, email: u.email, role: u.role, password: '', cpf: u.cpf ?? '', phone: u.phone ?? '' });
         setEditError('');
     }
 
@@ -106,6 +108,8 @@ export default function UsersPage() {
                 name: editForm.name,
                 email: editForm.email,
                 role: editForm.role,
+                cpf: editForm.cpf || undefined,
+                phone: editForm.phone || undefined,
             };
             if (editForm.password) payload.password = editForm.password;
 
@@ -217,9 +221,17 @@ export default function UsersPage() {
                                 value={createForm.email} onChange={e => setCreateForm(f => ({ ...f, email: e.target.value }))} />
 
                             <label className={styles.label}>Senha</label>
-                            <input className={styles.input} type="password" required placeholder="Mínimo 6 caracteres"
+                            <input className={styles.input} type="password" required={createForm.role !== 'CLIENT'} placeholder={createForm.role === 'CLIENT' ? 'Opcional para cliente pré-cadastrado' : 'Mínimo 6 caracteres'}
                                 minLength={6} value={createForm.password}
                                 onChange={e => setCreateForm(f => ({ ...f, password: e.target.value }))} />
+
+                            <label className={styles.label}>CPF</label>
+                            <input className={styles.input} placeholder="Opcional"
+                                value={createForm.cpf} onChange={e => setCreateForm(f => ({ ...f, cpf: e.target.value }))} />
+
+                            <label className={styles.label}>Celular</label>
+                            <input className={styles.input} placeholder="Opcional"
+                                value={createForm.phone} onChange={e => setCreateForm(f => ({ ...f, phone: e.target.value }))} />
 
                             <label className={styles.label}>Função</label>
                             <select className={styles.select} value={createForm.role}
@@ -233,6 +245,12 @@ export default function UsersPage() {
                             {createForm.role === 'CASHIER' && (
                                 <p className={styles.roleHint}>
                                     Crie um usuário por terminal (ex: <strong>"Caixa 01"</strong>, <strong>"Caixa 02"</strong>).
+                                </p>
+                            )}
+
+                            {createForm.role === 'CLIENT' && (
+                                <p className={styles.roleHint}>
+                                    Cliente pode ser pré-cadastrado sem senha. O acesso do app será feito depois com Google.
                                 </p>
                             )}
 
@@ -266,8 +284,16 @@ export default function UsersPage() {
                             <input className={styles.input} type="email" required
                                 value={editForm.email} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} />
 
-                            <label className={styles.label}>Nova senha <span className={styles.optional}>(deixe em branco para manter)</span></label>
-                            <input className={styles.input} type="password" placeholder="Nova senha (opcional)"
+                            <label className={styles.label}>CPF</label>
+                            <input className={styles.input} placeholder="Opcional"
+                                value={editForm.cpf} onChange={e => setEditForm(f => ({ ...f, cpf: e.target.value }))} />
+
+                            <label className={styles.label}>Celular</label>
+                            <input className={styles.input} placeholder="Opcional"
+                                value={editForm.phone} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))} />
+
+                            <label className={styles.label}>Nova senha <span className={styles.optional}>{editForm.role === 'CLIENT' ? '(opcional)' : '(deixe em branco para manter)'}</span></label>
+                            <input className={styles.input} type="password" placeholder={editForm.role === 'CLIENT' ? 'Opcional para cliente' : 'Nova senha (opcional)'}
                                 minLength={6} value={editForm.password}
                                 onChange={e => setEditForm(f => ({ ...f, password: e.target.value }))} />
 

@@ -95,12 +95,27 @@ export class AdminService {
     }
 
     // ─── Orders ────────────────────────────────────────────────────────────────
-    async getOrders(status?: OrderStatus) {
+    async getOrders(status?: OrderStatus, dateFrom?: string, dateTo?: string) {
+        const where = {
+            ...(status ? { status } : {}),
+            ...this.buildOrdersDateFilter(dateFrom, dateTo),
+        };
+
         return this.prisma.order.findMany({
-            where: status ? { status } : undefined,
+            where,
             include: {
                 user: { select: { id: true, name: true, email: true } },
-                items: { include: { product: { select: { id: true, name: true, imageUrl: true } } } },
+                items: {
+                    select: {
+                        id: true,
+                        productId: true,
+                        productName: true,
+                        qty: true,
+                        unitPriceCents: true,
+                        subtotalCents: true,
+                        product: { select: { id: true, name: true, imageUrl: true } },
+                    },
+                },
                 ticket: { select: { id: true, codeShort: true, consumedAt: true, expiresAt: true } },
             },
             orderBy: { createdAt: 'desc' },
@@ -157,5 +172,40 @@ export class AdminService {
             ...dto,
             imageUrl: this.uploadsService.normalizePublicUrl(dto.imageUrl) ?? undefined,
         };
+    }
+
+    private buildOrdersDateFilter(dateFrom?: string, dateTo?: string) {
+        const from = this.parseDateBoundary(dateFrom, 'start');
+        const to = this.parseDateBoundary(dateTo, 'end');
+
+        if (!from && !to) {
+            return {};
+        }
+
+        return {
+            createdAt: {
+                ...(from ? { gte: from } : {}),
+                ...(to ? { lte: to } : {}),
+            },
+        };
+    }
+
+    private parseDateBoundary(value: string | undefined, mode: 'start' | 'end') {
+        if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            return null;
+        }
+
+        const [yearStr, monthStr, dayStr] = value.split('-');
+        const year = Number.parseInt(yearStr, 10);
+        const month = Number.parseInt(monthStr, 10);
+        const day = Number.parseInt(dayStr, 10);
+
+        if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+            return null;
+        }
+
+        return mode === 'start'
+            ? new Date(year, month - 1, day, 0, 0, 0, 0)
+            : new Date(year, month - 1, day, 23, 59, 59, 999);
     }
 }

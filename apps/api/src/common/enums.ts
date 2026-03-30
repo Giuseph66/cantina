@@ -30,6 +30,7 @@ export const OrderChannel = {
 export type OrderChannel = (typeof OrderChannel)[keyof typeof OrderChannel];
 
 export const PaymentMethod = {
+    ONLINE: 'ONLINE',
     ON_PICKUP: 'ON_PICKUP',
     PIX: 'PIX',
     CASH: 'CASH',

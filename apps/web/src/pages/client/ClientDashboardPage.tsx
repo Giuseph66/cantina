@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
     ShoppingBag, Clock, CheckCircle2, AlertCircle, XCircle,
-    QrCode, Utensils, TrendingUp, Receipt, Wallet, LogOut,
+    QrCode, TrendingUp, Receipt, Wallet,
 } from 'lucide-react';
 import styles from './ClientDashboardPage.module.css';
 
@@ -25,7 +25,7 @@ const STATUS_MAP: Record<string, { label: string; color: string; icon: any }> = 
     CANCELLED: { label: 'Cancelado', color: '#e11d48', icon: XCircle },
 };
 
-interface OrderItem { productId: string; product: { name: string }; qty: number; }
+interface OrderItem { productId: string; productName: string; qty: number; }
 interface Order {
     id: string; totalCents: number; status: string; paymentMethod: string;
     createdAt: string; items: OrderItem[];
@@ -40,10 +40,15 @@ interface Summary {
 
 type Tab = 'historico' | 'pendencias';
 
+function getOrderTarget(order: Order) {
+    const isPendingOnlinePayment = order.status === 'CREATED' && ['ONLINE', 'PIX', 'CARD'].includes(order.paymentMethod);
+    return isPendingOnlinePayment ? `/pedido?orderId=${order.id}` : `/order/${order.id}`;
+}
+
 export default function ClientDashboardPage() {
     const api = useApi();
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
 
     const [tab, setTab] = useState<Tab>('historico');
     const [orders, setOrders] = useState<Order[]>([]);
@@ -67,30 +72,9 @@ export default function ClientDashboardPage() {
 
     const activeOrders = orders.filter(o => ['CREATED', 'CONFIRMED', 'PAID', 'IN_PREP', 'READY'].includes(o.status));
 
-    async function handleLogout() {
-        await logout();
-        navigate('/');
-    }
 
     return (
         <div className={styles.page}>
-            {/* ── Header ── */}
-            <header className={styles.header}>
-                <div className={styles.headerInner}>
-                    <button className={styles.logoBtn} onClick={() => navigate('/menu')}>
-                        <Utensils size={20} />
-                        <span>Cantina</span>
-                    </button>
-                    <div className={styles.headerActions}>
-                        <button className={styles.menuBtn} onClick={() => navigate('/menu')}>
-                            Ver cardápio
-                        </button>
-                        <button className={styles.logoutBtn} onClick={handleLogout} title="Sair">
-                            <LogOut size={18} />
-                        </button>
-                    </div>
-                </div>
-            </header>
 
             <main className={styles.main}>
                 <div className={styles.dashboardSidebar}>
@@ -200,7 +184,7 @@ export default function ClientDashboardPage() {
                                         const Icon = s.icon;
                                         return (
                                             <li key={order.id}>
-                                                <button className={styles.orderCard} onClick={() => navigate(`/order/${order.id}`)}>
+                                                <button className={styles.orderCard} onClick={() => navigate(getOrderTarget(order))}>
                                                     <div className={styles.orderTop}>
                                                         <span className={styles.orderDate}>
                                                             {format(new Date(order.createdAt), "dd 'de' MMM, HH:mm", { locale: ptBR })}
@@ -211,7 +195,7 @@ export default function ClientDashboardPage() {
                                                         {order.items.map(item => (
                                                             <span key={item.productId} className={styles.orderItem}>
                                                                 <span className={styles.orderQty}>{item.qty}×</span>
-                                                                {item.product.name}
+                                                                {item.productName}
                                                             </span>
                                                         ))}
                                                     </div>
@@ -277,7 +261,7 @@ export default function ClientDashboardPage() {
                                                             {order.items.map(item => (
                                                                 <span key={item.productId} className={styles.orderItem}>
                                                                     <span className={styles.orderQty}>{item.qty}×</span>
-                                                                    {item.product.name}
+                                                                    {item.productName}
                                                                 </span>
                                                             ))}
                                                         </div>

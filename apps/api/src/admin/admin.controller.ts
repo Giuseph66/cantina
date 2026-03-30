@@ -65,8 +65,12 @@ export class AdminController {
 
     // Orders
     @Get('orders')
-    getOrders(@Query('status') status?: OrderStatus) {
-        return this.adminService.getOrders(status);
+    getOrders(
+        @Query('status') status?: OrderStatus,
+        @Query('dateFrom') dateFrom?: string,
+        @Query('dateTo') dateTo?: string,
+    ) {
+        return this.adminService.getOrders(status, dateFrom, dateTo);
     }
 
     @Patch('orders/:id/status')

@@ -19,6 +19,7 @@ interface Settings {
     openTime: string;
     closeTime: string;
     allowReconfirmPickup: boolean;
+    allowOnPickupPayment: boolean;
     pixKey: string;
     allowCredit: boolean;
     notificationEmails: string;
@@ -45,6 +46,7 @@ const PAYLOAD_LABELS: Record<string, string> = {
     offline: 'Modo offline', deviceId: 'Dispositivo', items: 'Itens',
     actorId: 'Operador ID', bannerMessage: 'Banner', pixKey: 'Chave PIX',
     allowCredit: 'Crédito interno', allowReconfirmPickup: 'Reconfirmação de retirada',
+    allowOnPickupPayment: 'Pagamento no balcão',
     ticketWindowMinutes: 'Validade do ticket (min)', ticketValidityMode: 'Modo de validade do ticket',
     ticketValidUntilTime: 'Ticket válido até', openTime: 'Abertura', closeTime: 'Fechamento',
     description: 'Descrição', totals: 'Totais por método', consumedAtOffline: 'Data do consumo',
@@ -181,6 +183,7 @@ export default function SettingsPage() {
         bannerMessage: '',
         openTime: '07:00', closeTime: '17:00',
         allowReconfirmPickup: true,
+        allowOnPickupPayment: true,
         pixKey: '', allowCredit: true, notificationEmails: '',
     });
     const [loading, setLoading] = useState(true);
@@ -345,6 +348,13 @@ export default function SettingsPage() {
                                     onChange={e => setSettings(s => ({ ...s, pixKey: e.target.value }))} />
                                 <span className={styles.hint}>Usada para gerar QR Code de pagamento dos clientes.</span>
                             </div>
+
+                            <Toggle
+                                checked={settings.allowOnPickupPayment}
+                                onChange={v => setSettings(s => ({ ...s, allowOnPickupPayment: v }))}
+                                label='Permitir "Pagar no Balcão" no Checkout'
+                                description="Se desativado, o cliente só poderá concluir pedidos com pagamento online."
+                            />
 
                             <Toggle
                                 checked={settings.allowCredit}

@@ -28,6 +28,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const PAYMENT_LABELS: Record<string, string> = {
+    ONLINE: 'Pagamento online',
     PIX: 'Pix',
     ON_PICKUP: 'Pagar no balcão',
     CASH: 'Dinheiro',

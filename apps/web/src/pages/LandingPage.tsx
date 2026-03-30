@@ -1,11 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { ProxyImage } from '../components/ProxyImage';
 import { useApi } from '../hooks/useApi';
-import { getDefaultRouteForRole } from '../utils/authRouting';
-import { Search, ShoppingBag, Plus, Minus, User, ChevronRight, Store, Utensils, Zap } from 'lucide-react';
+import { Utensils, ChevronRight, Plus, Minus, Zap, ShoppingBag, Store } from 'lucide-react';
 import styles from './LandingPage.module.css';
 
 interface Category { id: string; name: string; }
@@ -21,15 +19,15 @@ function formatCurrency(cents: number) {
 }
 
 export default function LandingPage() {
-    const { user } = useAuth();
     const { add, setQty, items, count, totalCents } = useCart();
     const api = useApi();
     const navigate = useNavigate();
 
+    const [searchParams] = useSearchParams();
+    const searchTerm = searchParams.get('s') || '';
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [activeTab, setActiveTab] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -81,52 +79,7 @@ export default function LandingPage() {
     return (
         <div className={styles.container}>
             {/* TOP NAVIGATION HEADER */}
-            <header className={styles.header}>
-                <div className={styles.headerInner}>
-                    <div className={styles.logo} onClick={() => window.scrollTo(0, 0)}>
-                        <div className={styles.logoIconWrapper}>
-                            <Store className={styles.logoIcon} size={20} />
-                        </div>
-                        <span className={styles.logoText}>Cantina</span>
-                    </div>
-
-                    <div className={styles.searchBar}>
-                        <Search size={18} className={styles.searchIcon} />
-                        <input
-                            type="text"
-                            placeholder="Buscar lanches, bebidas..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-
-                    <div className={styles.headerActions}>
-                        {!user ? (
-                            <Link to="/login" className={styles.loginBtn}>
-                                <User size={18} />
-                                <span>Entrar</span>
-                            </Link>
-                        ) : (
-                            <div className={styles.userProfile}>
-                                <div className={styles.avatar}>
-                                    {user.name ? user.name.charAt(0).toUpperCase() : <User size={18} />}
-                                </div>
-                                <div className={styles.userInfo}>
-                                    <span className={styles.userName}>{user.name?.split(' ')[0] || 'Usuário'}</span>
-                                    <Link to={getDefaultRouteForRole(user.role)} className={styles.painelLink}>Painel</Link>
-                                </div>
-                            </div>
-                        )}
-                        <button className={styles.cartBtn} onClick={() => navigate('/pedido')}>
-                            <div className={styles.cartIconWrapper}>
-                                <ShoppingBag size={20} />
-                                {count > 0 && <span className={styles.cartBadge}>{count}</span>}
-                            </div>
-                            <span className={styles.cartTotal}>{formatCurrency(totalCents)}</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
+            {/* Persistent Header is now provided by ClientLayout */}
 
             {/* MAIN CONTENT AREA: Grocery Layout */}
             <main className={styles.main}>

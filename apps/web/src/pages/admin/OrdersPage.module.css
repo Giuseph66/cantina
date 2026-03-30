@@ -8,6 +8,87 @@
     flex-wrap: wrap;
 }
 
+.filterBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    background: white;
+    border: 1.5px solid #f1e9df;
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    min-width: min(100%, 520px);
+}
+
+.filterHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #5d4037;
+}
+
+.filterRow {
+    display: flex;
+    align-items: end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.filterField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #78716c;
+}
+
+.filterField input {
+    min-width: 150px;
+    min-height: 42px;
+    border-radius: 10px;
+    border: 1.5px solid #e8ddd5;
+    padding: 0 0.85rem;
+    font-size: 0.88rem;
+    color: #3e2723;
+    background: #fff;
+}
+
+.applyBtn {
+    min-height: 42px;
+    border: none;
+    border-radius: 10px;
+    padding: 0 1rem;
+    background: #3e2723;
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.quickFilters {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.quickBtn {
+    border: 1.5px solid #e8ddd5;
+    border-radius: 999px;
+    background: #fff;
+    color: #5d4037;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.quickBtn:hover,
+.applyBtn:hover {
+    filter: brightness(1.03);
+}
+
 .refreshBtn {
     display: flex;
     align-items: center;
@@ -90,6 +171,167 @@
     font-size: 0.8rem;
     color: #94a3b8;
     margin-bottom: 1rem;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.sectionTitle {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #3e2723;
+}
+
+.sectionDesc {
+    margin: 0.3rem 0 0;
+    font-size: 0.82rem;
+    color: #78716c;
+}
+
+.sectionBadge {
+    background: #f8efe7;
+    color: #9a5f2b;
+    border-radius: 999px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.74rem;
+    font-weight: 800;
+}
+
+.separationSection {
+    background: linear-gradient(180deg, #fffdfb 0%, #fff 100%);
+    border: 1.5px solid #f1e9df;
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.separationEmpty {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    border: 1px dashed #e6d6c8;
+    border-radius: 12px;
+    padding: 1rem;
+    color: #8b7b70;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.separationGrid {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.85rem;
+}
+
+.separationCard {
+    border: 1px solid #f1e9df;
+    border-radius: 14px;
+    background: white;
+    padding: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.separationTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.separationName {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #3e2723;
+}
+
+.separationEmail {
+    margin: 0.2rem 0 0;
+    font-size: 0.76rem;
+    color: #8b97a8;
+}
+
+.registeredBadge,
+.clientFlag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #edfdf5;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    border-radius: 999px;
+    padding: 0.22rem 0.6rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.clientFlag {
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
+}
+
+.separationMeta {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    font-size: 0.76rem;
+    color: #6b7280;
+    font-weight: 700;
+}
+
+.separationMeta span,
+.separationMeta strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.separationMeta strong {
+    color: #9a5f2b;
+    font-size: 0.85rem;
+}
+
+.orderChips {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.orderChip {
+    background: #f8fafc;
+    color: #475569;
+    border-radius: 999px;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.69rem;
+    font-weight: 800;
+}
+
+.itemsStack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.stackRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    color: #4b5563;
 }
 
 /* ── Lista de pedidos ────────────────────────────────────────────────── */
@@ -354,4 +596,20 @@
     text-align: center;
     padding: 5rem;
     color: #94a3b8;
+}
+
+@media (max-width: 640px) {
+    .filterBlock {
+        min-width: 100%;
+    }
+
+    .filterRow {
+        align-items: stretch;
+    }
+
+    .filterField,
+    .filterField input,
+    .applyBtn {
+        width: 100%;
+    }
 }

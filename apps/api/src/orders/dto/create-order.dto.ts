@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsInt, IsUUID, Min, Max, ValidateNested, ArrayMinSize, ArrayMaxSize } from 'class-validator';
+import { IsArray, IsIn, IsInt, IsUUID, Min, Max, ValidateNested, ArrayMinSize, ArrayMaxSize } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PaymentMethod } from '../../common/enums';
 
@@ -20,6 +20,6 @@ export class CreateOrderDto {
     @Type(() => OrderItemDto)
     items: OrderItemDto[];
 
-    @IsEnum(PaymentMethod)
+    @IsIn([PaymentMethod.ONLINE, PaymentMethod.ON_PICKUP])
     paymentMethod: PaymentMethod;
 }

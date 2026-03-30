@@ -7,11 +7,16 @@ import {
     useEffect,
 } from 'react';
 
-interface AuthUser {
+export interface AuthUser {
     id: string;
     name: string;
     email: string;
     role: string;
+    pictureUrl: string | null;
+    emailVerified: boolean;
+    cpf: string | null;
+    phone: string | null;
+    isProfileComplete: boolean;
 }
 
 interface AuthContextValue {
@@ -19,6 +24,8 @@ interface AuthContextValue {
     isLoading: boolean;
     login: (email: string, password: string) => Promise<AuthUser>;
     register: (name: string, email: string, password: string) => Promise<AuthUser>;
+    loginWithGoogle: (credential: string) => Promise<AuthUser>;
+    updateProfile: (cpf: string, phone: string) => Promise<AuthUser>;
     logout: () => Promise<void>;
     refreshSession: () => Promise<void>;
 }
@@ -88,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ name, email: normalizedEmail, password }),
+            body: JSON.stringify({ name: name.trim(), email: normalizedEmail, password }),
         });
 
         if (!res.ok) {
@@ -98,6 +105,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = (await res.json()) as { user: AuthUser };
         setUser(data.user);
         return data.user;
+    }, []);
+
+    const loginWithGoogle = useCallback(async (credential: string) => {
+        const res = await fetch('/api/v1/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ credential }),
+        });
+
+        if (!res.ok) {
+            throw new Error(await readErrorMessage(res, 'Falha ao autenticar com Google'));
+        }
+
+        const data = (await res.json()) as { user: AuthUser };
+        setUser(data.user);
+        return data.user;
+    }, []);
+
+    const updateProfile = useCallback(async (cpf: string, phone: string) => {
+        const res = await fetch('/api/v1/auth/profile', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                cpf: cpf.replace(/\D/g, ''),
+                phone: phone.replace(/\D/g, ''),
+            }),
+        });
+
+        if (!res.ok) {
+            throw new Error(await readErrorMessage(res, 'Falha ao atualizar perfil'));
+        }
+
+        const data = (await res.json()) as AuthUser;
+        setUser(data);
+        return data;
     }, []);
 
     const logout = useCallback(async () => {
@@ -112,7 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, register, logout, refreshSession }}>
+        <AuthContext.Provider value={{ user, isLoading, login, register, loginWithGoogle, updateProfile, logout, refreshSession }}>
             {children}
         </AuthContext.Provider>
     );

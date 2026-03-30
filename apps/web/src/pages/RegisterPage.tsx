@@ -1,19 +1,21 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ArrowRight, Eye, EyeOff, ChevronLeft } from 'lucide-react';
 import styles from './LoginPage.module.css';
 
 const FOOD_PHOTOS = [
-    { src: '/images/login-assado.png',  alt: 'Assado' },
-    { src: '/images/login-cafe.png',    alt: 'Café com Leite' },
-    { src: '/images/login-misto.png',   alt: 'Misto Quente' },
+    { src: '/images/login-assado.png', alt: 'Assado' },
+    { src: '/images/login-cafe.png', alt: 'Café com Leite' },
+    { src: '/images/login-misto.png', alt: 'Misto Quente' },
     { src: '/images/login-burguer.png', alt: 'X-Burguer' },
 ];
 
 export default function RegisterPage() {
     const { register, user, isLoading } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const next = searchParams.get('next');
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -31,9 +33,9 @@ export default function RegisterPage() {
 
     useEffect(() => {
         if (!isLoading && user) {
-            navigate('/pedido', { replace: true });
+            navigate(next && next.startsWith('/') ? next : '/pedido', { replace: true });
         }
-    }, [isLoading, navigate, user]);
+    }, [isLoading, navigate, next, user]);
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
@@ -47,7 +49,7 @@ export default function RegisterPage() {
         setLoading(true);
         try {
             await register(name, email, password);
-            navigate('/pedido');
+            navigate(next && next.startsWith('/') ? next : '/pedido', { replace: true });
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erro ao criar conta');
         } finally {
@@ -58,10 +60,8 @@ export default function RegisterPage() {
     return (
         <div className={styles.page}>
             <div className={styles.card}>
-
-                {/* ── Hero photo mosaic ────────────────────────── */}
                 <div className={styles.cardHero}>
-                    {FOOD_PHOTOS.map(photo => (
+                    {FOOD_PHOTOS.map((photo) => (
                         <div key={photo.alt} className={styles.heroCell}>
                             <img src={photo.src} alt={photo.alt} className={styles.heroCellImg} />
                         </div>
@@ -73,13 +73,12 @@ export default function RegisterPage() {
                     </Link>
                 </div>
 
-                {/* ── Form body ────────────────────────────────── */}
                 <div className={styles.cardBody}>
                     <div className={styles.formHead}>
                         <h1 className={styles.formTitle}>
                             Criar conta<span className={styles.dot}>.</span>
                         </h1>
-                        <p className={styles.formSub}>Cadastro gratuito para acompanhar seus pedidos</p>
+                        <p className={styles.formSub}>Cadastre-se com e-mail e senha ou volte para usar o Google.</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className={styles.form} noValidate>
@@ -91,7 +90,7 @@ export default function RegisterPage() {
                                 className={styles.input}
                                 placeholder="Seu nome completo"
                                 value={name}
-                                onChange={e => setName(e.target.value)}
+                                onChange={(e) => setName(e.target.value)}
                                 required
                                 autoComplete="name"
                             />
@@ -105,7 +104,7 @@ export default function RegisterPage() {
                                 className={styles.input}
                                 placeholder="seu@email.com"
                                 value={email}
-                                onChange={e => setEmail(e.target.value.toLowerCase())}
+                                onChange={(e) => setEmail(e.target.value.toLowerCase())}
                                 required
                                 autoComplete="email"
                                 autoCapitalize="none"
@@ -123,13 +122,13 @@ export default function RegisterPage() {
                                     className={styles.input}
                                     placeholder="Mínimo 6 caracteres"
                                     value={password}
-                                    onChange={e => setPassword(e.target.value)}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     required
                                     minLength={6}
                                     autoComplete="new-password"
                                 />
                                 <button type="button" className={styles.eyeBtn}
-                                    onClick={() => setShowPassword(v => !v)}
+                                    onClick={() => setShowPassword((v) => !v)}
                                     aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}>
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
@@ -137,7 +136,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div className={styles.field}>
-                            <label htmlFor="confirmPassword" className={styles.label}>Confirmar Senha</label>
+                            <label htmlFor="confirmPassword" className={styles.label}>Confirmar senha</label>
                             <div className={styles.passwordWrapper}>
                                 <input
                                     id="confirmPassword"
@@ -145,22 +144,20 @@ export default function RegisterPage() {
                                     className={styles.input}
                                     placeholder="Repita sua senha"
                                     value={confirmPassword}
-                                    onChange={e => setConfirmPassword(e.target.value)}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
                                     minLength={6}
                                     autoComplete="new-password"
                                 />
                                 <button type="button" className={styles.eyeBtn}
-                                    onClick={() => setShowConfirmPassword(v => !v)}
+                                    onClick={() => setShowConfirmPassword((v) => !v)}
                                     aria-label={showConfirmPassword ? 'Ocultar senha' : 'Exibir senha'}>
                                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
                         </div>
 
-                        {error && (
-                            <div className={styles.error} role="alert">{error}</div>
-                        )}
+                        {error && <div className={styles.error} role="alert">{error}</div>}
 
                         <button type="submit" className={styles.button} disabled={loading}>
                             {loading
@@ -173,15 +170,16 @@ export default function RegisterPage() {
                     <div className={styles.footer}>
                         <p className={styles.registerHint}>
                             Já tem conta?{' '}
-                            <Link to="/login" className={styles.registerLink}>Entrar agora</Link>
+                            <Link to={`/login${next && next.startsWith('/') ? `?next=${encodeURIComponent(next)}` : ''}`} className={styles.registerLink}>
+                                Entrar
+                            </Link>
                         </p>
-                        <Link to="/login" className={styles.backLink}>
+                        <Link to="/" className={styles.backLink}>
                             <ChevronLeft size={15} />
-                            <span>Voltar</span>
+                            <span>Ver cardápio</span>
                         </Link>
                     </div>
                 </div>
-
             </div>
         </div>
     );

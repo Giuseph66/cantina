@@ -22,6 +22,7 @@ export enum OrderChannel {
 }
 
 export enum PaymentMethod {
+    ONLINE = 'ONLINE',
     ON_PICKUP = 'ON_PICKUP',
     PIX = 'PIX',
     CASH = 'CASH',

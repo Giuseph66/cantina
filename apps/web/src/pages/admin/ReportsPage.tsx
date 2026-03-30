@@ -82,6 +82,7 @@ function shiftDate(days: number) {
 }
 
 const PAYMENT_LABELS: Record<string, string> = {
+    ONLINE: 'Pagamento online',
     CASH: 'Dinheiro',
     PIX: 'Pix',
     CARD: 'Cartao',

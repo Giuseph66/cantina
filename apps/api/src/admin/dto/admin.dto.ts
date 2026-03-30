@@ -144,6 +144,10 @@ export class UpdateSettingsDto {
     @IsOptional()
     allowReconfirmPickup?: boolean;
 
+    @IsBoolean()
+    @IsOptional()
+    allowOnPickupPayment?: boolean;
+
     @IsString()
     @MaxLength(200)
     @IsOptional()

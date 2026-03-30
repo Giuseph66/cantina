@@ -8,7 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "dev": "concurrently \"npm run dev -w apps/api\" \"npm run dev:web:wait\"",
+    "dev:web:wait": "node scripts/wait-for-port.cjs 3000 && npm run dev -w apps/web",
     "build": "npm run build -w apps/api && npm run build -w apps/web",
     "lint": "eslint \"apps/**/*.{ts,tsx}\" \"packages/**/*.ts\"",
     "lint:fix": "eslint \"apps/**/*.{ts,tsx}\" \"packages/**/*.ts\" --fix",

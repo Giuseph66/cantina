@@ -35,11 +35,11 @@ export default defineConfig({
         port: 5173,
         proxy: {
             '/api': {
-                target: 'http://localhost:3000', //https://umbonate-theda-conterminously.ngrok-free.dev
+                target: 'http://localhost:3000', //http://cantina-api.neurelix.com.br
                 changeOrigin: true,
             },
             '/uploads': {
-                target: 'http://localhost:3000', //https://umbonate-theda-conterminously.ngrok-free.dev
+                target: 'http://localhost:3000', //http://cantina-api.neurelix.com.br
                 changeOrigin: true,
             },
         },

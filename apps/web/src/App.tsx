@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
@@ -17,6 +17,7 @@ import CheckoutPage from './pages/client/CheckoutPage';
 import OrderConfirmedPage from './pages/client/OrderConfirmedPage';
 import MyOrdersPage from './pages/client/MyOrdersPage';
 import ClientDashboardPage from './pages/client/ClientDashboardPage';
+import ClientLayout from './components/ClientLayout';
 import TotemPage from './pages/totem/TotemPage';
 
 // Pages — CASHIER
@@ -38,8 +39,12 @@ import DashboardPage from './pages/DashboardPage';
 
 function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
     const { user, isLoading } = useAuth();
+    const location = useLocation();
     if (isLoading) return null;
-    if (!user) return <Navigate to="/login" replace />;
+    if (!user) {
+        const next = `${location.pathname}${location.search}`;
+        return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
+    }
     if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
     return <>{children}</>;
 }
@@ -93,15 +98,15 @@ export default function App() {
                     <Routes>
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />
-                        <Route path="/" element={<LandingPage />} />
-
-                        {/* CLIENT */}
-                        <Route path="/menu" element={<MenuPage />} />
-                        <Route path="/pedido" element={<CheckoutPage />} />
-                        <Route path="/checkout" element={<Navigate to="/pedido" replace />} />
-                        <Route path="/order/:orderId" element={<OrderConfirmedPage />} />
-                        <Route path="/orders" element={<MyOrdersPage />} />
-                        <Route path="/minha-conta" element={<ProtectedRoute roles={['CLIENT']}><ClientDashboardPage /></ProtectedRoute>} />
+                        <Route element={<ClientLayout />}>
+                            <Route path="/" element={<LandingPage />} />
+                            <Route path="/menu" element={<MenuPage />} />
+                            <Route path="/pedido" element={<ProtectedRoute roles={['CLIENT']}><CheckoutPage /></ProtectedRoute>} />
+                            <Route path="/checkout" element={<Navigate to="/pedido" replace />} />
+                            <Route path="/order/:orderId" element={<ProtectedRoute roles={['CLIENT']}><OrderConfirmedPage /></ProtectedRoute>} />
+                            <Route path="/orders" element={<ProtectedRoute roles={['CLIENT']}><MyOrdersPage /></ProtectedRoute>} />
+                            <Route path="/minha-conta" element={<ProtectedRoute roles={['CLIENT']}><ClientDashboardPage /></ProtectedRoute>} />
+                        </Route>
 
                         {/* CASHIER */}
                         <Route path="/cashier/scan" element={<ProtectedRoute roles={['CASHIER', 'ADMIN']}><ScannerPage /></ProtectedRoute>} />

@@ -3,11 +3,20 @@
   "buildCommand": "npm run build -w apps/web",
   "outputDirectory": "apps/web/dist",
   "env": {
-    "API_PROXY_URL": "https://umbonate-theda-conterminously.ngrok-free.dev"
+    "API_PROXY_URL": "http://cantina-api.neurelix.com.br"
   },
   "rewrites": [
-    { "source": "/api/v1/:path*",  "destination": "https://umbonate-theda-conterminously.ngrok-free.dev/api/v1/:path*" },
-    { "source": "/uploads/:path*", "destination": "/api/uploads/:path*" },
-    { "source": "/(.*)",           "destination": "/index.html" }
+    {
+      "source": "/api/v1/:path*",
+      "destination": "http://cantina-api.neurelix.com.br/api/v1/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "/api/uploads/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

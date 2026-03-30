@@ -12,6 +12,7 @@ export interface AppSettings {
     openTime: string;
     closeTime: string;
     allowReconfirmPickup: boolean;
+    allowOnPickupPayment: boolean;
     pixKey: string;
     allowCredit: boolean;
     notificationEmails: string;
@@ -25,6 +26,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     openTime: '07:00',
     closeTime: '17:00',
     allowReconfirmPickup: true,
+    allowOnPickupPayment: true,
     pixKey: '',
     allowCredit: true,
     notificationEmails: '',

@@ -3,7 +3,7 @@ import { useApi } from '../../hooks/useApi';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, ScrollText, ShoppingBag, Utensils, Plus, Minus, ArrowLeft } from 'lucide-react';
+import { ArrowRight, Utensils, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { ProxyImage } from '../../components/ProxyImage';
 import styles from './MenuPage.module.css';
@@ -116,30 +116,10 @@ export default function MenuPage() {
     const content = (
         <div className={styles.page}>
             {!isAdmin && (
-                <header className={styles.header}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <button className={styles.iconBtn} onClick={() => navigate('/')} aria-label="Voltar para a tela inicial">
-                            <ArrowLeft size={22} strokeWidth={2.5} />
-                        </button>
-                        <div>
-                            <h1 className={styles.title}>Cardápio</h1>
-                            <p className={styles.subtitle}>Escolha seus itens e acompanhe seu pedido.</p>
-                        </div>
-                    </div>
-                    <div className={styles.actions}>
-                        <button className={styles.actionBtn} onClick={() => navigate('/orders')}
-                            aria-label="Meus pedidos" title="Meus pedidos">
-                            <ScrollText size={22} strokeWidth={2.5} />
-                            <span className={styles.actionText}>Pedidos</span>
-                        </button>
-                        <button className={styles.actionBtn} onClick={() => navigate('/pedido')}
-                            aria-label="Pedido" title="Pedido">
-                            <ShoppingBag size={22} strokeWidth={2.5} />
-                            <span className={styles.actionText}>Pedido</span>
-                            {count > 0 && <span className={styles.badge}>{count}</span>}
-                        </button>
-                    </div>
-                </header>
+                <div className={styles.titleBlock} style={{ padding: '2rem 1rem 1rem', textAlign: 'center' }}>
+                    <h1 className={styles.title}>Cardápio</h1>
+                    <p className={styles.subtitle}>Escolha seus itens e acompanhe seu pedido.</p>
+                </div>
             )}
 
             {/* Mobile: tabs horizontais */}

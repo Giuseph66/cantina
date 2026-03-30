@@ -94,6 +94,7 @@ export class CounterService {
                             const product = products.find((p) => p.id === item.productId)!;
                             return {
                                 productId: item.productId,
+                                productName: product.name,
                                 qty: item.qty,
                                 unitPriceCents: product.priceCents,
                                 subtotalCents: product.priceCents * item.qty,

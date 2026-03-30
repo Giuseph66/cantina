@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useApi } from '../../hooks/useApi';
-import { QRCodeSVG } from 'qrcode.react';
-import { CheckCircle2, Clock, AlertCircle, Banknote, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { QRCodeSVG } from 'qrcode.react';
+import {
+    AlertCircle,
+    Banknote,
+    CheckCircle2,
+    Clock,
+    Copy,
+    CreditCard,
+    Loader2,
+    RefreshCcw,
+} from 'lucide-react';
+import { useApi } from '../../hooks/useApi';
 import styles from './OrderConfirmedPage.module.css';
 
 function formatCurrency(cents: number) {
@@ -12,7 +21,7 @@ function formatCurrency(cents: number) {
 }
 
 const PAYMENT_LABELS: Record<string, string> = {
-    PIX: 'Pix', ON_PICKUP: 'Pagar no balcão', CASH: 'Dinheiro', CARD: 'Cartão', INTERNAL_CREDIT: 'Notinha',
+    ONLINE: 'Pagamento online', PIX: 'Pix', ON_PICKUP: 'Pagar no balcao', CASH: 'Dinheiro', CARD: 'Cartao', INTERNAL_CREDIT: 'Notinha',
 };
 
 interface OrderTicket {
@@ -22,9 +31,24 @@ interface OrderTicket {
     consumedAt: string | null;
 }
 
-interface OrderItem { productId: string; product: { name: string }; qty: number; }
+interface LatestPayment {
+    id: string;
+    paymentMethod: string;
+    status: string;
+    qrCode: string | null;
+    qrCodeBase64: string | null;
+    lastError: string | null;
+    statusDetail: string | null;
+    expiresAt: string | null;
+}
 
-interface PublicOrder {
+interface OrderItem {
+    productId: string;
+    productName: string;
+    qty: number;
+}
+
+interface OrderDetails {
     id: string;
     ticket: OrderTicket | null;
     status: string;
@@ -32,46 +56,102 @@ interface PublicOrder {
     totalCents: number;
     createdAt: string;
     items: OrderItem[];
+    latestPayment: LatestPayment | null;
+}
+
+interface ReconciledOrderPayment {
+    orderId: string;
+    orderStatus: string;
+    paymentMethod: string;
+    totalCents: number;
+    latestPayment: LatestPayment | null;
+}
+
+function normalizeQrCodeImageSrc(value: string | null) {
+    if (!value) return null;
+    const normalized = value.trim();
+    if (!normalized) return null;
+    if (normalized.startsWith('data:image')) {
+        return normalized;
+    }
+    return `data:image/png;base64,${normalized}`;
 }
 
 export default function OrderConfirmedPage() {
     const { orderId } = useParams();
     const navigate = useNavigate();
     const api = useApi();
-    const [orderInfo, setOrderInfo] = useState<PublicOrder | null>(null);
+    const [orderInfo, setOrderInfo] = useState<OrderDetails | null>(null);
     const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState(false);
+    const [refreshingPayment, setRefreshingPayment] = useState(false);
+
+    async function fetchOrder() {
+        const data = await api.get<OrderDetails>(`/orders/${orderId}`);
+        setOrderInfo(data);
+        return data;
+    }
+
+    async function reconcilePayment() {
+        if (!orderId) return;
+
+        setRefreshingPayment(true);
+        try {
+            const data = await api.get<ReconciledOrderPayment>(`/payments/orders/${orderId}/reconcile`);
+            setOrderInfo((current) => current ? {
+                ...current,
+                status: data.orderStatus,
+                paymentMethod: data.paymentMethod,
+                totalCents: data.totalCents,
+                latestPayment: data.latestPayment,
+            } : current);
+        } catch (err) {
+            console.error('Erro ao reconciliar pagamento', err);
+        } finally {
+            setRefreshingPayment(false);
+        }
+    }
 
     useEffect(() => {
-        async function fetchTicket() {
+        let cancelled = false;
+
+        async function load() {
             try {
-                const data = await api.get<PublicOrder>(`/orders/public/${orderId}`);
-                setOrderInfo(data);
+                const data = await fetchOrder();
+                if (!cancelled && data.status === 'CREATED') {
+                    await reconcilePayment();
+                }
             } catch (err) {
                 console.error('Erro ao carregar ticket', err);
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                }
             }
         }
-        fetchTicket();
+
+        void load();
+        return () => {
+            cancelled = true;
+        };
     }, [orderId]);
 
-    const handleReportPaid = async () => {
-        setActionLoading(true);
-        try {
-            const updated = await api.post<any>(`/orders/public/${orderId}/report-paid`, {});
-            setOrderInfo(prev => prev ? { ...prev, status: updated.status, paymentMethod: updated.paymentMethod } : null);
-            alert('Pagamento informado com sucesso! Aguarde a conferência no balcão.');
-        } catch (err: any) {
-            alert(err.message || 'Erro ao informar pagamento');
-        } finally {
-            setActionLoading(false);
-        }
-    };
+    useEffect(() => {
+        if (!orderInfo || orderInfo.status !== 'CREATED') return;
+
+        const intervalId = window.setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                void reconcilePayment();
+            }
+        }, 8000);
+
+        return () => {
+            window.clearInterval(intervalId);
+        };
+    }, [orderInfo?.id, orderInfo?.status]);
 
     if (loading) return (
         <div className={styles.loading}>
-            <Clock size={40} strokeWidth={1} className={styles.pulse} />
+            <Loader2 size={40} strokeWidth={1} className={styles.pulse} />
             <p>Gerando seu ticket premium...</p>
         </div>
     );
@@ -81,8 +161,8 @@ export default function OrderConfirmedPage() {
     if (!orderInfo || !ticket) return (
         <div className={styles.errorState}>
             <AlertCircle size={64} strokeWidth={1} color="#ef4444" />
-            <h2>Pedido não encontrado</h2>
-            <p>Não conseguimos localizar este pedido ou ticket no sistema.</p>
+            <h2>Pedido nao encontrado</h2>
+            <p>Nao conseguimos localizar este pedido ou ticket no sistema.</p>
             <button className={styles.btn} style={{ width: 'auto', padding: '0.75rem 2rem' }} onClick={() => navigate('/orders')}>
                 Ver Meus Pedidos
             </button>
@@ -92,54 +172,38 @@ export default function OrderConfirmedPage() {
     const isExpired = new Date(ticket.expiresAt) < new Date();
     const isConsumed = !!ticket.consumedAt;
     const isAwaitingPayment = orderInfo.status === 'CREATED';
-    const isPaymentReported = orderInfo.status === 'CONFIRMED' && orderInfo.paymentMethod === 'PIX';
+    const isOnlinePayment = orderInfo.paymentMethod === 'ONLINE' || orderInfo.paymentMethod === 'PIX' || orderInfo.paymentMethod === 'CARD';
+    const pendingPayment = isAwaitingPayment ? orderInfo.latestPayment : null;
 
     let HeaderIcon = <CheckCircle2 size={42} strokeWidth={2.5} color="var(--secondary)" />;
-    let headerTitle = "Pedido Confirmado";
-    let statusColor = "var(--secondary)";
+    let headerTitle = 'Pedido Confirmado';
+    let statusColor = 'var(--secondary)';
 
     if (isConsumed) {
         HeaderIcon = <CheckCircle2 size={42} strokeWidth={2.5} color="#059669" />;
-        headerTitle = "Pedido Entregue";
-        statusColor = "#059669";
+        headerTitle = 'Pedido Entregue';
+        statusColor = '#059669';
     } else if (isExpired) {
         HeaderIcon = <AlertCircle size={42} strokeWidth={2.5} color="#94a3b8" />;
-        headerTitle = "Ticket Expirado";
-        statusColor = "#94a3b8";
+        headerTitle = 'Ticket Expirado';
+        statusColor = '#94a3b8';
     } else if (isAwaitingPayment) {
         HeaderIcon = <Clock size={42} strokeWidth={2.5} color="#d97706" />;
-        headerTitle = "Aguardando Pagamento";
-        statusColor = "#d97706";
-    } else if (isPaymentReported) {
-        HeaderIcon = <CheckCircle2 size={42} strokeWidth={2.5} color="#0284c7" />;
-        headerTitle = "Pagamento Informado";
-        statusColor = "#0284c7";
+        headerTitle = 'Aguardando Pagamento';
+        statusColor = '#d97706';
     }
 
     return (
         <div className={styles.page}>
-            <header className={styles.topNav}>
-                <button className={styles.backBtn} onClick={() => navigate('/orders')}>
-                    <ArrowLeft size={20} strokeWidth={2.5} />
-                    Voltar
-                </button>
-            </header>
 
             <div className={styles.dashboardContainer}>
-
-                {/* Left Column: Details */}
                 <div className={styles.detailsColumn}>
                     <div className={styles.headerBlock}>
                         {HeaderIcon}
                         <h2 style={{ color: statusColor }}>{headerTitle}</h2>
                         {isAwaitingPayment && (
                             <p className={styles.headerSubtitle}>
-                                Conclua o pagamento para liberar seu pedido no balcão.
-                            </p>
-                        )}
-                        {isPaymentReported && (
-                            <p className={styles.headerSubtitle}>
-                                Aguarde a conferência do pagamento no balcão de retirada.
+                                Conclua o pagamento para liberar seu pedido no balcao.
                             </p>
                         )}
                     </div>
@@ -167,7 +231,7 @@ export default function OrderConfirmedPage() {
                             {orderInfo.items.map(item => (
                                 <div key={item.productId} className={styles.itemRow}>
                                     <span className={styles.itemQty}>{item.qty}x</span>
-                                    <span className={styles.itemName}>{item.product.name}</span>
+                                    <span className={styles.itemName}>{item.productName}</span>
                                 </div>
                             ))}
                         </div>
@@ -179,7 +243,6 @@ export default function OrderConfirmedPage() {
                     </div>
                 </div>
 
-                {/* Right Column: QR Code */}
                 <div className={styles.ticketColumn}>
                     <div className={styles.card}>
                         <div className={styles.qrContainer}>
@@ -197,11 +260,11 @@ export default function OrderConfirmedPage() {
                                     {isAwaitingPayment ? 'Bloqueado' : isExpired ? 'Expirado' : 'Consumido'}
                                 </div>
                             )}
-                            <p className={styles.qrHelper}>Apresente este QR no balcão</p>
+                            <p className={styles.qrHelper}>Apresente este QR no balcao</p>
                         </div>
 
                         <div className={styles.codeDiv}>
-                            <p className={styles.codeHelper}>Código de Retirada</p>
+                            <p className={styles.codeHelper}>Codigo de Retirada</p>
                             <div className={styles.shortCode}>{ticket.codeShort}</div>
                         </div>
 
@@ -209,25 +272,60 @@ export default function OrderConfirmedPage() {
                             <div className={styles.infoRow}>
                                 <Clock size={16} strokeWidth={2.5} />
                                 <span>
-                                    Válido até: {format(new Date(ticket.expiresAt), "HH:mm 'de' dd/MM", { locale: ptBR })}
+                                    Valido ate: {format(new Date(ticket.expiresAt), "HH:mm 'de' dd/MM", { locale: ptBR })}
                                 </span>
                             </div>
                         </div>
 
-                        {isAwaitingPayment && (
-                            <button
-                                className={styles.btn}
-                                style={{ backgroundColor: '#059669', marginBottom: '1rem' }}
-                                onClick={handleReportPaid}
-                                disabled={actionLoading}
-                            >
-                                <CheckCircle2 size={20} strokeWidth={2.5} />
-                                Já Paguei!
-                            </button>
+                        {isAwaitingPayment && isOnlinePayment && (
+                            <div className={styles.pendingActions}>
+                                <button className={styles.btn} onClick={() => navigate(`/pedido?orderId=${orderInfo.id}`)}>
+                                    <CreditCard size={18} />
+                                    Continuar pagamento online
+                                </button>
+                                <button className={styles.secondaryBtn} onClick={() => void reconcilePayment()}>
+                                    {refreshingPayment ? <Loader2 size={16} className={styles.pulse} /> : <RefreshCcw size={16} />}
+                                    Atualizar status
+                                </button>
+                            </div>
+                        )}
+
+                        {isAwaitingPayment && isOnlinePayment && pendingPayment?.paymentMethod === 'PIX' && pendingPayment.qrCode && (
+                            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                {normalizeQrCodeImageSrc(pendingPayment.qrCodeBase64) && (
+                                    <img
+                                        src={normalizeQrCodeImageSrc(pendingPayment.qrCodeBase64) || undefined}
+                                        alt="QR Code PIX"
+                                        style={{ width: '100%', borderRadius: '1rem', border: '1px solid var(--glass-border)', background: 'white', padding: '1rem' }}
+                                    />
+                                )}
+                                <div style={{ fontFamily: 'monospace', fontSize: '0.8rem', lineHeight: 1.5, padding: '1rem', borderRadius: '1rem', background: 'var(--bg-main)', border: '1px solid var(--glass-border)', wordBreak: 'break-all' }}>
+                                    {pendingPayment.qrCode}
+                                </div>
+                                <button
+                                    className={styles.btn}
+                                    style={{ marginBottom: 0 }}
+                                    onClick={() => navigator.clipboard.writeText(pendingPayment.qrCode || '')}
+                                >
+                                    <Copy size={18} strokeWidth={2.5} />
+                                    Copiar codigo PIX
+                                </button>
+                            </div>
+                        )}
+
+                        {isAwaitingPayment && isOnlinePayment && pendingPayment?.paymentMethod === 'CARD' && (
+                            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', borderRadius: '1rem', background: 'var(--bg-main)', border: '1px solid var(--glass-border)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: statusColor, fontWeight: 800 }}>
+                                    <CreditCard size={18} />
+                                    Pagamento em analise pelo gateway
+                                </div>
+                                {pendingPayment.lastError && (
+                                    <span style={{ color: '#dc2626', fontWeight: 700 }}>{pendingPayment.lastError}</span>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>
-
             </div>
         </div>
     );

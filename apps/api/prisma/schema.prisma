@@ -14,7 +14,7 @@ datasource db {
 // Role        : CLIENT | CASHIER | KITCHEN | ADMIN
 // OrderStatus : CREATED | CONFIRMED | PAID | IN_PREP | READY | PICKED_UP | CANCELLED | EXPIRED
 // OrderChannel: ONLINE | COUNTER
-// PaymentMethod: ON_PICKUP | PIX | CASH | CARD | INTERNAL_CREDIT
+// PaymentMethod: ONLINE | ON_PICKUP | PIX | CASH | CARD | INTERNAL_CREDIT
 // CreditNoteStatus: OPEN | PAID | CANCELLED
 // StockMode   : UNLIMITED | CONTROLLED
 // CashMovementType: SALE | SANGRIA | AJUSTE
@@ -22,14 +22,21 @@ datasource db {
 // ─── Modelos ──────────────────────────────────────────────────────────────────
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  role         String   @default("CLIENT")
-  isActive     Boolean  @default(true) @map("is_active")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  passwordHash  String?   @map("password_hash")
+  googleSub     String?   @unique @map("google_sub")
+  pictureUrl    String?   @map("picture_url")
+  emailVerified Boolean   @default(false) @map("email_verified")
+  cpf           String?   @unique
+  phone         String?   @map("phone")
+  role          String    @default("CLIENT")
+  isActive      Boolean   @default(true) @map("is_active")
+  lastLoginAt   DateTime? @map("last_login_at")
+  mercadoPagoCustomerId String? @map("mercado_pago_customer_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
   orders              Order[]         @relation("UserOrders")
   ticketsConsumed     Ticket[]        @relation("ConsumedBy")
@@ -92,6 +99,7 @@ model Order {
   ticket         Ticket?
   creditNote     CreditNote?
   cashMovements  CashMovement[]
+  paymentTransactions PaymentTransaction[]
 
   @@index([status])
   @@index([createdAt])
@@ -131,6 +139,7 @@ model OrderItem {
   id             String @id @default(uuid())
   orderId        String @map("order_id")
   productId      String @map("product_id")
+  productName    String @map("product_name")
   qty            Int
   unitPriceCents Int    @map("unit_price_cents")
   subtotalCents  Int    @map("subtotal_cents")
@@ -140,6 +149,33 @@ model OrderItem {
 
   @@index([orderId])
   @@map("order_items")
+}
+
+model PaymentTransaction {
+  id                 String    @id @default(uuid())
+  orderId            String    @map("order_id")
+  provider           String
+  paymentMethod      String    @map("payment_method")
+  status             String    @default("PENDING")
+  externalId         String?   @unique @map("external_id")
+  externalReference  String?   @map("external_reference")
+  amountCents        Int       @map("amount_cents")
+  payerName          String?   @map("payer_name")
+  payerEmail         String?   @map("payer_email")
+  payerDocument      String?   @map("payer_document")
+  detailsJson        String?   @map("details_json")
+  webhookPayloadJson String?   @map("webhook_payload_json")
+  lastError          String?   @map("last_error")
+  paidAt             DateTime? @map("paid_at")
+  expiresAt          DateTime? @map("expires_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([orderId, status])
+  @@index([externalReference])
+  @@map("payment_transactions")
 }
 
 model Ticket {
