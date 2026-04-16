@@ -317,7 +317,7 @@ export default function OrderConfirmedPage() {
                             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', borderRadius: '1rem', background: 'var(--bg-main)', border: '1px solid var(--glass-border)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: statusColor, fontWeight: 800 }}>
                                     <CreditCard size={18} />
-                                    Pagamento em analise pelo gateway
+                                    Pagamento em analise.
                                 </div>
                                 {pendingPayment.lastError && (
                                     <span style={{ color: '#dc2626', fontWeight: 700 }}>{pendingPayment.lastError}</span>

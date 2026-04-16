@@ -5,7 +5,7 @@ import { UnauthorizedException, ForbiddenException, ConflictException } from '@n
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Role } from '../common/enums';
+import { PaymentMethod, Role } from '../common/enums';
 import { AuditService } from '../common/services/audit.service';
 
 describe('AuthService', () => {
@@ -40,6 +40,9 @@ describe('AuthService', () => {
                 create: jest.fn(),
                 update: jest.fn(),
             },
+            order: {
+                findFirst: jest.fn(),
+            },
             $transaction: jest.fn(async (callback: any) => callback(prismaMock)),
         };
 
@@ -55,6 +58,7 @@ describe('AuthService', () => {
 
         service = module.get(AuthService);
         prisma = module.get(PrismaService);
+        prisma.order.findFirst.mockResolvedValue(null);
     });
 
     it('deve retornar access_token com credenciais internas válidas', async () => {
@@ -131,7 +135,7 @@ describe('AuthService', () => {
         expect(result.user.email).toBe('manual@cantina.local');
         expect(result.user.role).toBe(Role.CLIENT);
         expect(prisma.user.create).toHaveBeenCalled();
-        });
+    });
 
     it('deve vincular login Google em cliente existente com mesmo e-mail', async () => {
         const clientUser = {
@@ -207,5 +211,66 @@ describe('AuthService', () => {
             });
 
         await expect(service.loginWithGoogle('credential')).rejects.toThrow(ConflictException);
+    });
+
+    it('deve permitir atualizar perfil antes do primeiro pagamento aprovado', async () => {
+        prisma.user.findUnique.mockResolvedValue({
+            id: 'client-1',
+            cpf: null,
+            phone: null,
+        });
+        prisma.user.findFirst.mockResolvedValue(null);
+        prisma.order.findFirst.mockResolvedValue(null);
+        prisma.user.update.mockResolvedValue({
+            ...mockUser,
+            id: 'client-1',
+            role: Role.CLIENT,
+            cpf: '12345678901',
+            phone: '65999999999',
+        });
+
+        const result = await service.updateProfile('client-1', {
+            cpf: '12345678901',
+            phone: '65999999999',
+        });
+
+        expect(result.cpf).toBe('12345678901');
+        expect(prisma.user.update).toHaveBeenCalled();
+    });
+
+    it('deve bloquear troca de CPF após pagamento aprovado', async () => {
+        prisma.user.findUnique.mockResolvedValue({
+            id: 'client-1',
+            cpf: '12345678901',
+            phone: '65999999999',
+        });
+        prisma.user.findFirst.mockResolvedValue(null);
+        prisma.order.findFirst.mockResolvedValue({
+            id: 'order-1',
+            paymentMethod: PaymentMethod.PIX,
+        });
+
+        await expect(service.updateProfile('client-1', {
+            cpf: '10987654321',
+            phone: '65999999999',
+        })).rejects.toThrow(ForbiddenException);
+    });
+
+    it('deve bloquear troca de celular após pagamento aprovado', async () => {
+        prisma.user.findUnique.mockResolvedValue({
+            id: 'client-1',
+            cpf: '12345678901',
+            phone: '65999999999',
+        });
+        prisma.user.findFirst.mockResolvedValue(null);
+        prisma.order.findFirst.mockResolvedValue({
+            id: 'order-1',
+            paymentMethod: PaymentMethod.CARD,
+        });
+
+        await expect(service.updateProfile('client-1', {
+            cpf: '12345678901',
+            phone: '65111111111',
+        })).rejects.toThrow(ForbiddenException);
     });
 });

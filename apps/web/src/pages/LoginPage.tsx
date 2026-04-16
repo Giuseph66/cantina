@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, ArrowRight, ChevronLeft } from 'lucide-react';
 import styles from './LoginPage.module.css';
-import { getDefaultRouteForRole } from '../utils/authRouting';
+import { getDefaultRouteForRole, normalizeNextRoute } from '../utils/authRouting';
 
 const FOOD_PHOTOS = [
     { src: '/images/login-assado.png', alt: 'Assado' },
@@ -59,6 +59,7 @@ export default function LoginPage() {
     const [searchParams] = useSearchParams();
     const next = searchParams.get('next');
     const googleButtonRef = useRef<HTMLDivElement | null>(null);
+    const googleInitializedClientIdRef = useRef<string | null>(null);
 
     const [config, setConfig] = useState<AuthPublicConfig>({ googleClientId: null, googleEnabled: false });
     const [loadingConfig, setLoadingConfig] = useState(true);
@@ -70,8 +71,7 @@ export default function LoginPage() {
     const [googleLoading, setGoogleLoading] = useState(false);
 
     const targetAfterLogin = useMemo(() => {
-        if (next && next.startsWith('/')) return next;
-        return null;
+        return normalizeNextRoute(next);
     }, [next]);
 
     useEffect(() => {
@@ -112,29 +112,32 @@ export default function LoginPage() {
                 const google = (window as any).google;
                 if (!google?.accounts?.id) throw new Error('SDK do Google não ficou disponível no navegador.');
 
-                google.accounts.id.initialize({
-                    client_id: config.googleClientId,
-                    callback: async (response: GoogleCredentialResponse) => {
-                        if (!response.credential) {
-                            setError('O Google não retornou credencial válida.');
-                            return;
-                        }
+                if (googleInitializedClientIdRef.current !== config.googleClientId) {
+                    google.accounts.id.initialize({
+                        client_id: config.googleClientId,
+                        callback: async (response: GoogleCredentialResponse) => {
+                            if (!response.credential) {
+                                setError('O Google não retornou credencial válida.');
+                                return;
+                            }
 
-                        setError('');
-                        setGoogleLoading(true);
-                        try {
-                            const loggedUser = await loginWithGoogle(response.credential);
-                            navigate(targetAfterLogin ?? getDefaultRouteForRole(loggedUser.role), { replace: true });
-                        } catch (err) {
-                            setError(err instanceof Error ? err.message : 'Falha ao autenticar com Google.');
-                        } finally {
-                            setGoogleLoading(false);
-                        }
-                    },
-                    auto_select: false,
-                    cancel_on_tap_outside: true,
-                    use_fedcm_for_prompt: true,
-                });
+                            setError('');
+                            setGoogleLoading(true);
+                            try {
+                                const loggedUser = await loginWithGoogle(response.credential);
+                                navigate(targetAfterLogin ?? getDefaultRouteForRole(loggedUser.role), { replace: true });
+                            } catch (err) {
+                                setError(err instanceof Error ? err.message : 'Falha ao autenticar com Google.');
+                            } finally {
+                                setGoogleLoading(false);
+                            }
+                        },
+                        auto_select: false,
+                        cancel_on_tap_outside: true,
+                        use_fedcm_for_prompt: true,
+                    });
+                    googleInitializedClientIdRef.current = config.googleClientId;
+                }
 
                 googleButtonRef.current.innerHTML = '';
                 google.accounts.id.renderButton(googleButtonRef.current, {

@@ -5,6 +5,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from '@prisma/client';
+import { CsrfGuard } from '../common/guards/csrf.guard';
 
 @Controller()
 export class OrdersController {
@@ -13,7 +14,7 @@ export class OrdersController {
     ) { }
 
     @Post('orders')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, CsrfGuard)
     @Throttle({ default: { ttl: 60000, limit: 5 } })
     createOrder(@Body() dto: CreateOrderDto, @CurrentUser() user: User) {
         return this.ordersService.createOrder(user.id, dto);

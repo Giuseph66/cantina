@@ -90,6 +90,9 @@ model Order {
   status        String   @default("CREATED")
   totalCents    Int      @map("total_cents")
   paymentMethod String   @map("payment_method")
+  paymentLockId String?  @map("payment_lock_id")
+  paymentLockMethod String? @map("payment_lock_method")
+  paymentLockExpiresAt DateTime? @map("payment_lock_expires_at")
   paidAt        DateTime? @map("paid_at")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
@@ -100,6 +103,7 @@ model Order {
   creditNote     CreditNote?
   cashMovements  CashMovement[]
   paymentTransactions PaymentTransaction[]
+  webhookEvents  PaymentWebhookEvent[]
 
   @@index([status])
   @@index([createdAt])
@@ -159,12 +163,16 @@ model PaymentTransaction {
   status             String    @default("PENDING")
   externalId         String?   @unique @map("external_id")
   externalReference  String?   @map("external_reference")
+  attemptKey         String?   @map("attempt_key")
+  gatewayRequestId   String?   @map("gateway_request_id")
   amountCents        Int       @map("amount_cents")
   payerName          String?   @map("payer_name")
   payerEmail         String?   @map("payer_email")
   payerDocument      String?   @map("payer_document")
   detailsJson        String?   @map("details_json")
   webhookPayloadJson String?   @map("webhook_payload_json")
+  webhookVerifiedAt  DateTime? @map("webhook_verified_at")
+  webhookSource      String?   @map("webhook_source")
   lastError          String?   @map("last_error")
   paidAt             DateTime? @map("paid_at")
   expiresAt          DateTime? @map("expires_at")
@@ -172,10 +180,31 @@ model PaymentTransaction {
   updatedAt          DateTime  @updatedAt @map("updated_at")
 
   order Order @relation(fields: [orderId], references: [id])
+  webhookEvents PaymentWebhookEvent[]
 
   @@index([orderId, status])
   @@index([externalReference])
+  @@index([attemptKey])
   @@map("payment_transactions")
+}
+
+model PaymentWebhookEvent {
+  id                   String    @id @default(uuid())
+  provider             String
+  eventKey             String    @map("event_key")
+  eventType            String?   @map("event_type")
+  orderId              String    @map("order_id")
+  paymentTransactionId String    @map("payment_transaction_id")
+  payloadJson          String?   @map("payload_json")
+  createdAt            DateTime  @default(now()) @map("created_at")
+
+  order              Order              @relation(fields: [orderId], references: [id])
+  paymentTransaction PaymentTransaction @relation(fields: [paymentTransactionId], references: [id])
+
+  @@unique([provider, eventKey])
+  @@index([paymentTransactionId, createdAt])
+  @@index([orderId, createdAt])
+  @@map("payment_webhook_events")
 }
 
 model Ticket {

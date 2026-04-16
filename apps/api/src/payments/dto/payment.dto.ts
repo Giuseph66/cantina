@@ -1,53 +1,15 @@
 import {
-    IsEmail,
+    IsBoolean,
     IsInt,
     IsOptional,
     IsString,
-    Matches,
     Max,
     MaxLength,
     Min,
 } from 'class-validator';
-
-const TAX_ID_PATTERN = /^[0-9.\-\/]{11,18}$/;
-const PHONE_PATTERN = /^[0-9()\-\s+]{10,20}$/;
-
-export class CreatePixPaymentDto {
-    @IsString()
-    @MaxLength(120)
-    @IsOptional()
-    payerName?: string;
-
-    @IsEmail()
-    @MaxLength(160)
-    @IsOptional()
-    payerEmail?: string;
-
-    @IsString()
-    @Matches(TAX_ID_PATTERN)
-    payerDocument: string;
-
-    @IsString()
-    @Matches(PHONE_PATTERN)
-    @IsOptional()
-    payerPhone?: string;
-}
+export class CreatePixPaymentDto { }
 
 export class CreateCardPaymentDto {
-    @IsString()
-    @MaxLength(120)
-    @IsOptional()
-    payerName?: string;
-
-    @IsEmail()
-    @MaxLength(160)
-    @IsOptional()
-    payerEmail?: string;
-
-    @IsString()
-    @Matches(TAX_ID_PATTERN)
-    payerDocument: string;
-
     @IsString()
     @MaxLength(250)
     @IsOptional()
@@ -58,6 +20,7 @@ export class CreateCardPaymentDto {
     @IsOptional()
     cardId?: string;
 
+    @IsBoolean()
     @IsOptional()
     saveCard?: boolean;
 

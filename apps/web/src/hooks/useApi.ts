@@ -1,9 +1,14 @@
+import { appendCsrfHeader } from '../lib/csrf';
+
 const BASE = '/api/v1';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-    const headers: HeadersInit = options?.body instanceof FormData
-        ? { 'ngrok-skip-browser-warning': '1', ...options?.headers }
-        : { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1', ...options?.headers };
+    const headers = new Headers(options?.headers);
+    headers.set('ngrok-skip-browser-warning', '1');
+    if (!(options?.body instanceof FormData) && !headers.has('Content-Type')) {
+        headers.set('Content-Type', 'application/json');
+    }
+    appendCsrfHeader(headers, options?.method);
 
     const res = await fetch(`${BASE}${path}`, {
         ...options,

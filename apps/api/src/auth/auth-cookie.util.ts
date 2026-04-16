@@ -1,6 +1,9 @@
+import * as crypto from 'node:crypto';
 import type { CookieOptions, Request } from 'express';
 
 export const AUTH_COOKIE_NAME = 'cantina_auth';
+export const CSRF_COOKIE_NAME = 'cantina_csrf';
+export const CSRF_HEADER_NAME = 'x-csrf-token';
 
 const DURATION_TO_MS: Record<string, number> = {
     s: 1000,
@@ -23,9 +26,8 @@ function parseDurationToMs(value: string): number | undefined {
     return Number(amount) * DURATION_TO_MS[unit];
 }
 
-function buildAuthCookieBaseOptions(): CookieOptions {
+function buildCookieBaseOptions(): CookieOptions {
     return {
-        httpOnly: true,
         sameSite: 'lax',
         secure: process.env.NODE_ENV === 'production',
         path: '/',
@@ -36,25 +38,51 @@ export function buildAuthCookieOptions(): CookieOptions {
     const maxAge = parseDurationToMs(process.env.JWT_EXPIRES_IN ?? '8h');
 
     return maxAge
-        ? { ...buildAuthCookieBaseOptions(), maxAge }
-        : buildAuthCookieBaseOptions();
+        ? { ...buildCookieBaseOptions(), httpOnly: true, maxAge }
+        : { ...buildCookieBaseOptions(), httpOnly: true };
 }
 
 export function buildClearAuthCookieOptions(): CookieOptions {
-    return buildAuthCookieBaseOptions();
+    return { ...buildCookieBaseOptions(), httpOnly: true };
 }
 
-export function extractAuthTokenFromCookie(request?: Request): string | null {
+export function buildCsrfCookieOptions(): CookieOptions {
+    return {
+        ...buildCookieBaseOptions(),
+        httpOnly: false,
+    };
+}
+
+export function buildClearCsrfCookieOptions(): CookieOptions {
+    return {
+        ...buildCookieBaseOptions(),
+        httpOnly: false,
+    };
+}
+
+export function generateCsrfToken() {
+    return crypto.randomBytes(32).toString('hex');
+}
+
+export function extractCookieValue(request: Request | undefined, cookieName: string): string | null {
     const cookieHeader = request?.headers?.cookie;
     if (!cookieHeader) return null;
 
-    const prefix = `${AUTH_COOKIE_NAME}=`;
-    const authCookie = cookieHeader
+    const prefix = `${cookieName}=`;
+    const cookie = cookieHeader
         .split(';')
-        .map((cookie) => cookie.trim())
-        .find((cookie) => cookie.startsWith(prefix));
+        .map((item) => item.trim())
+        .find((item) => item.startsWith(prefix));
 
-    if (!authCookie) return null;
+    if (!cookie) return null;
 
-    return decodeURIComponent(authCookie.slice(prefix.length));
+    return decodeURIComponent(cookie.slice(prefix.length));
+}
+
+export function extractCsrfTokenFromCookie(request?: Request) {
+    return extractCookieValue(request, CSRF_COOKIE_NAME);
+}
+
+export function extractAuthTokenFromCookie(request?: Request): string | null {
+    return extractCookieValue(request, AUTH_COOKIE_NAME);
 }

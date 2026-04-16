@@ -6,6 +6,7 @@ import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from '@prisma/client';
+import { CsrfGuard } from '../common/guards/csrf.guard';
 
 @Controller()
 export class PaymentsController {
@@ -17,14 +18,14 @@ export class PaymentsController {
     }
 
     @Post('payments/orders/:orderId/pix')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, CsrfGuard)
     @Throttle({ default: { ttl: 60000, limit: 8 } })
     createPixPayment(@Param('orderId') orderId: string, @Body() dto: CreatePixPaymentDto, @CurrentUser() user: User) {
         return this.paymentsService.createPixPayment(orderId, user.id, user.role, dto);
     }
 
     @Post('payments/orders/:orderId/card')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, CsrfGuard)
     @Throttle({ default: { ttl: 60000, limit: 8 } })
     createCardPayment(@Param('orderId') orderId: string, @Body() dto: CreateCardPaymentDto, @CurrentUser() user: User) {
         return this.paymentsService.createCardPayment(orderId, user.id, user.role, dto);
@@ -45,21 +46,31 @@ export class PaymentsController {
 
     @Post('webhooks/mercadopago')
     async mercadoPagoWebhook(
-        @Query('webhookSecret') webhookSecret: string | undefined,
+        @Headers('x-webhook-secret') webhookSecretHeader: string | undefined,
+        @Headers('x-signature') signature: string | undefined,
+        @Headers('x-request-id') requestId: string | undefined,
+        @Query('webhookSecret') webhookSecretQuery: string | undefined,
         @Body() body: Record<string, any>,
         @Query() query: Record<string, string | undefined>,
     ) {
-        return this.paymentsService.handleMercadoPagoWebhook(webhookSecret, body, query);
+        return this.paymentsService.handleMercadoPagoWebhook(
+            webhookSecretHeader ?? webhookSecretQuery,
+            signature,
+            requestId,
+            body,
+            query,
+        );
     }
 
     @Post('webhooks/abacatepay')
     async abacatePayWebhook(
-        @Query('webhookSecret') webhookSecret: string | undefined,
+        @Headers('x-webhook-secret') webhookSecretHeader: string | undefined,
+        @Query('webhookSecret') webhookSecretQuery: string | undefined,
         @Headers('x-webhook-signature') signature: string | undefined,
         @Req() req: Request & { rawBody?: Buffer },
         @Body() body: Record<string, any>,
     ) {
         const rawBody = req.rawBody ? req.rawBody.toString('utf8') : JSON.stringify(body ?? {});
-        return this.paymentsService.handleAbacatePayWebhook(webhookSecret, signature, rawBody, body);
+        return this.paymentsService.handleAbacatePayWebhook(webhookSecretHeader ?? webhookSecretQuery, signature, rawBody, body);
     }
 }

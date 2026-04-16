@@ -66,18 +66,18 @@ export function Header() {
                         </Link>
                     ) : (
                         <div className={styles.userProfile}>
-                            <div className={styles.avatar}>
-                                {user.name ? user.name.charAt(0).toUpperCase() : <User size={18} />}
-                            </div>
-                            <div className={styles.userInfo}>
-                                <span className={styles.userName}>{user.name?.split(' ')[0] || 'Usuário'}</span>
-                                <div className={styles.userActions}>
-                                    <Link to={getDefaultRouteForRole(user.role)} className={styles.painelLink}>Painel</Link>
-                                    <button onClick={handleLogout} className={styles.logoutBtn} title="Sair">
-                                        <LogOut size={14} />
-                                    </button>
+                            <Link to={getDefaultRouteForRole(user.role)} className={styles.profileLink}>
+                                <div className={styles.avatar}>
+                                    {user.name ? user.name.charAt(0).toUpperCase() : <User size={18} />}
                                 </div>
-                            </div>
+                                <div className={styles.userInfo}>
+                                    <span className={styles.userName}>{user.name?.split(' ')[0] || 'Usuário'}</span>
+                                    <span className={styles.painelLink}>Painel</span>
+                                </div>
+                            </Link>
+                            <button onClick={handleLogout} className={styles.logoutBtn} title="Sair">
+                                <LogOut size={14} />
+                            </button>
                         </div>
                     )}
                     <button className={styles.cartBtn} onClick={() => navigate('/pedido')}>

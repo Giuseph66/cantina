@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ArrowRight, Eye, EyeOff, ChevronLeft } from 'lucide-react';
+import { normalizeNextRoute } from '../utils/authRouting';
 import styles from './LoginPage.module.css';
 
 const FOOD_PHOTOS = [
@@ -15,7 +16,7 @@ export default function RegisterPage() {
     const { register, user, isLoading } = useAuth();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const next = searchParams.get('next');
+    const next = normalizeNextRoute(searchParams.get('next'));
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -33,7 +34,7 @@ export default function RegisterPage() {
 
     useEffect(() => {
         if (!isLoading && user) {
-            navigate(next && next.startsWith('/') ? next : '/pedido', { replace: true });
+            navigate(next ?? '/pedido', { replace: true });
         }
     }, [isLoading, navigate, next, user]);
 
@@ -49,7 +50,7 @@ export default function RegisterPage() {
         setLoading(true);
         try {
             await register(name, email, password);
-            navigate(next && next.startsWith('/') ? next : '/pedido', { replace: true });
+            navigate(next ?? '/pedido', { replace: true });
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erro ao criar conta');
         } finally {
@@ -170,7 +171,7 @@ export default function RegisterPage() {
                     <div className={styles.footer}>
                         <p className={styles.registerHint}>
                             Já tem conta?{' '}
-                            <Link to={`/login${next && next.startsWith('/') ? `?next=${encodeURIComponent(next)}` : ''}`} className={styles.registerLink}>
+                            <Link to={`/login${next ? `?next=${encodeURIComponent(next)}` : ''}`} className={styles.registerLink}>
                                 Entrar
                             </Link>
                         </p>

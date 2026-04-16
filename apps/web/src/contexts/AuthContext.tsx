@@ -6,6 +6,7 @@ import {
     ReactNode,
     useEffect,
 } from 'react';
+import { appendCsrfHeader } from '../lib/csrf';
 
 export interface AuthUser {
     id: string;
@@ -35,6 +36,12 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 async function readErrorMessage(res: Response, fallback: string): Promise<string> {
     const err = await res.json().catch(() => ({}));
     return typeof err.message === 'string' ? err.message : fallback;
+}
+
+function buildHeaders(method: string, init?: HeadersInit) {
+    const headers = new Headers(init);
+    appendCsrfHeader(headers, method);
+    return headers;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -75,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const normalizedEmail = email.trim().toLowerCase();
         const res = await fetch('/api/v1/auth/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildHeaders('POST', { 'Content-Type': 'application/json' }),
             credentials: 'include',
             body: JSON.stringify({ email: normalizedEmail, password }),
         });
@@ -93,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const normalizedEmail = email.trim().toLowerCase();
         const res = await fetch('/api/v1/auth/register', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildHeaders('POST', { 'Content-Type': 'application/json' }),
             credentials: 'include',
             body: JSON.stringify({ name: name.trim(), email: normalizedEmail, password }),
         });
@@ -110,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const loginWithGoogle = useCallback(async (credential: string) => {
         const res = await fetch('/api/v1/auth/google', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildHeaders('POST', { 'Content-Type': 'application/json' }),
             credentials: 'include',
             body: JSON.stringify({ credential }),
         });
@@ -127,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const updateProfile = useCallback(async (cpf: string, phone: string) => {
         const res = await fetch('/api/v1/auth/profile', {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: buildHeaders('PATCH', { 'Content-Type': 'application/json' }),
             credentials: 'include',
             body: JSON.stringify({
                 cpf: cpf.replace(/\D/g, ''),
@@ -148,6 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             await fetch('/api/v1/auth/logout', {
                 method: 'POST',
+                headers: buildHeaders('POST'),
                 credentials: 'include',
             });
         } finally {

@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
-import { Role } from '../common/enums';
+import { PaymentMethod, Role } from '../common/enums';
 import { AuditService } from '../common/services/audit.service';
 import { OAuth2Client, type TokenPayload } from 'google-auth-library';
 import type { UpdateProfileDto } from './dto/update-profile.dto';
@@ -257,6 +257,25 @@ export class AuthService {
 
         if (conflictingCpfUser) {
             throw new ConflictException('Este CPF já está vinculado a outra conta.');
+        }
+
+        const hasApprovedOnlinePayment = await this.prisma.order.findFirst({
+            where: {
+                userId,
+                paidAt: { not: null },
+                paymentMethod: { in: [PaymentMethod.PIX, PaymentMethod.CARD] },
+            },
+            select: { id: true },
+        });
+
+        if (hasApprovedOnlinePayment) {
+            if (currentUser.cpf && currentUser.cpf !== cpf) {
+                throw new ForbiddenException('O CPF não pode ser alterado após o primeiro pagamento aprovado.');
+            }
+
+            if (currentUser.phone && currentUser.phone !== phone) {
+                throw new ForbiddenException('O celular não pode ser alterado após o primeiro pagamento aprovado.');
+            }
         }
 
         const updated = await this.prisma.user.update({
