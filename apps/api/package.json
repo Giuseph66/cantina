@@ -4,6 +4,7 @@
     "description": "Cantina API — NestJS + Prisma",
     "private": true,
     "scripts": {
+        "prebuild": "prisma generate",
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\"",
         "dev": "nest start --watch",
