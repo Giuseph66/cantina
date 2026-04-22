@@ -28,7 +28,7 @@
         "@nestjs/platform-express": "^10.4.4",
         "@nestjs/platform-socket.io": "^10.4.22",
         "@nestjs/schedule": "^6.1.1",
-        "@nestjs/serve-static": "^5.0.4",
+        "@nestjs/serve-static": "^4.0.2",
         "@nestjs/throttler": "^6.5.0",
         "@nestjs/websockets": "^10.4.22",
         "@prisma/client": "^5.18.0",
