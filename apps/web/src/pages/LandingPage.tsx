@@ -123,7 +123,7 @@ export default function LandingPage() {
                                 <div className={styles.promoText}>
                                     <span className={styles.promoTag}>Oferta Hoje</span>
                                     <h2>Fome Cedo? <br /> Pule a fila do intervalo!</h2>
-                                    <p>Peça agora pelo celular e retire seu lanche quentinho na hora do intervalo.</p>
+                                    <p>Peça agora e retire seu lanche quentinho na hora do intervalo.</p>
                                 </div>
                                 <div className={styles.promoImagePlaceholder}>
                                     {/* Usually an illustration here */}

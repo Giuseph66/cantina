@@ -35,16 +35,18 @@ export default defineConfig({
         port: 5173,
         proxy: {
             '/api': {
-                target: 'http://localhost:3000', //http://cantina-api.neurelix.com.br
+                target: 'https://api-cantina.neurelix.com.br', //http://cantina-api.neurelix.com.br
                 changeOrigin: true,
             },
             '/uploads': {
-                target: 'http://localhost:3000', //http://cantina-api.neurelix.com.br
+                target: 'https://api-cantina.neurelix.com.br', //http://cantina-api.neurelix.com.br
                 changeOrigin: true,
             },
         },
         allowedHosts: [
-            'umbonate-theda-conterminously.ngrok-free.dev'
+            'umbonate-theda-conterminously.ngrok-free.dev',
+            'https://api-cantina.neurelix.com.br',
+            'https://cantina.neurelix.com.br'
         ]
     },
     resolve: {
