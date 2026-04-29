@@ -552,16 +552,75 @@
 /* --- MOBILE SPECIFICS (Mobile-First Enhancements) --- */
 .mobileFloatingCart {
     position: fixed;
-    bottom: 2rem;
+    bottom: 2.5rem;
     left: 0;
     right: 0;
     margin: 0 auto;
-    width: calc(100% - 2rem);
+    width: calc(100% - 3rem);
     max-width: 500px;
     z-index: 100;
     display: flex;
-    animation: slideUpFloat 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideUpFloat 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+.mobileCheckoutBtn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 1.15rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: 850;
+    box-shadow: 0 10px 30px rgba(93, 64, 55, 0.3);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobileCheckoutBtn:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(93, 64, 55, 0.45);
+    background: #4a332c;
+}
+
+.mobileCheckoutBtn:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+.floatingCartLeft {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.floatingCartBadge {
+    background: white;
+    color: var(--primary);
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 900;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.floatingCartTotal {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 900;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+}
+
 
 @keyframes slideUpFloat {
     from { transform: translateY(100%); opacity: 0; }
@@ -824,52 +883,19 @@
         font-size: 0.85rem;
     }
 
-    /* Floating Cart for Mobile */
+    /* Floating Cart for Mobile adjustment */
     .mobileFloatingCart {
-        display: flex;
-        position: fixed;
-        bottom: 1rem;
+        bottom: 1.5rem;
         left: 1rem;
         right: 1rem;
         width: auto;
         margin: 0;
-        z-index: 100;
     }
 
     .mobileCheckoutBtn {
-        width: 100%;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 16px;
         padding: 1rem 1.25rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
         font-size: 1rem;
-        font-weight: 800;
-        box-shadow: 0 8px 25px rgba(93, 64, 55, 0.35);
-        cursor: pointer;
-    }
-
-    .floatingCartLeft {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .floatingCartBadge {
-        background: white;
-        color: var(--primary);
-        width: 24px;
-        height: 24px;
-        border-radius: 8px;
-        /* Slightly square */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.85rem;
-        font-weight: 900;
+        border-radius: 16px;
     }
 }
 

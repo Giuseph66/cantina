@@ -20,7 +20,6 @@ import { useApi } from '../../hooks/useApi';
 import { useAuth } from '../../contexts/AuthContext';
 import { socket } from '../../services/socket';
 import styles from './CheckoutPage.module.css';
-import { faIR } from 'date-fns/locale';
 
 type CheckoutMethod = 'ONLINE' | 'ON_PICKUP';
 type OnlineMethod = 'PIX' | 'CARD';
