@@ -28,7 +28,7 @@ export default function LandingPage() {
     const searchTerm = searchParams.get('s') || '';
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
-    const [activeTab, setActiveTab] = useState<string | null>('especiais');
+    const [activeTab, setActiveTab] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 

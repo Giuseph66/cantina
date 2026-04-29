@@ -20,6 +20,7 @@ import { useApi } from '../../hooks/useApi';
 import { useAuth } from '../../contexts/AuthContext';
 import { socket } from '../../services/socket';
 import styles from './CheckoutPage.module.css';
+import { faIR } from 'date-fns/locale';
 
 type CheckoutMethod = 'ONLINE' | 'ON_PICKUP';
 type OnlineMethod = 'PIX' | 'CARD';
@@ -127,6 +128,8 @@ export default function CheckoutPage() {
     const { user, updateProfile } = useAuth();
     const resumeOrderId = searchParams.get('orderId');
     const isResumingOrder = !!resumeOrderId;
+    const pode_vender = false; // Mudar para true quando liberar as vendas
+
 
     const [config, setConfig] = useState<PaymentConfig>({
         allowOnPickupPayment: true,
@@ -173,9 +176,10 @@ export default function CheckoutPage() {
     );
     const documentType = useMemo(() => getDocumentType(payerDocument), [payerDocument]);
     const checkoutUnavailable =
+        !pode_vender ||
         (checkoutMethod === 'ONLINE' && !config.onlineEnabled)
         || (checkoutMethod === 'ON_PICKUP' && !config.allowOnPickupPayment);
-    const canCreateOrder = !isResumingOrder && items.length > 0 && !creatingOrder && !loadingConfig && !checkoutUnavailable;
+    const canCreateOrder = !isResumingOrder && items.length > 0 && !creatingOrder && !loadingConfig && !checkoutUnavailable && pode_vender;
     const canGeneratePix = !!onlineOrder && config.pixEnabled && !processingPayment;
     const canPayCard = !!onlineOrder && config.cardEnabled && cardReady && !processingPayment;
 
@@ -715,125 +719,148 @@ export default function CheckoutPage() {
                     </div>
                 </section>
 
-                <section>
-                    <h2 className={styles.sectionTitle}>
-                        <CreditCard size={20} strokeWidth={2.5} /> Forma de Pagamento
-                    </h2>
-                    <div className={styles.paymentSection}>
-                        {profileNeedsCompletion && (
-                            <div className={styles.infoBox}>
-                                <div className={styles.infoBoxTitle}>
-                                    <ShieldCheck size={18} strokeWidth={2.5} />
-                                    Complete seu cadastro para pagar
+                {pode_vender ? (
+                    <section>
+                        <h2 className={styles.sectionTitle}>
+                            <CreditCard size={20} strokeWidth={2.5} /> Forma de Pagamento
+                        </h2>
+                        <div className={styles.paymentSection}>
+                            {profileNeedsCompletion && (
+                                <div className={styles.infoBox}>
+                                    <div className={styles.infoBoxTitle}>
+                                        <ShieldCheck size={18} strokeWidth={2.5} />
+                                        Complete seu cadastro para pagar
+                                    </div>
+                                    <p className={styles.infoBoxText}>
+                                        Como o pedido envolve pagamento, seu CPF e celular precisam estar salvos antes de criar o pedido.
+                                    </p>
                                 </div>
-                                <p className={styles.infoBoxText}>
-                                    Como o pedido envolve pagamento, seu CPF e celular precisam estar salvos antes de criar o pedido.
-                                </p>
-                            </div>
-                        )}
+                            )}
 
-                        {profileNeedsCompletion && (
-                            <div className={styles.fieldGrid}>
-                                <label className={styles.field}>
-                                    <span>Nome</span>
-                                    <input
-                                        className={styles.input}
-                                        value={payerName}
-                                        placeholder="Nome completo"
-                                        readOnly
-                                    />
-                                </label>
-                                <label className={styles.field}>
-                                    <span>E-mail</span>
-                                    <input
-                                        className={styles.input}
-                                        type="email"
-                                        value={payerEmail}
-                                        placeholder="voce@exemplo.com"
-                                        readOnly
-                                    />
-                                </label>
-                                <label className={styles.field}>
-                                    <span>CPF</span>
-                                    <input
-                                        className={styles.input}
-                                        value={formatTaxId(payerDocument)}
-                                        onChange={(event) => setPayerDocument(formatTaxId(event.target.value))}
-                                        placeholder="000.000.000-00"
-                                        inputMode="numeric"
-                                    />
-                                </label>
-                                <label className={styles.field}>
-                                    <span>Celular</span>
-                                    <input
-                                        className={styles.input}
-                                        type="tel"
-                                        value={payerPhone}
-                                        onChange={(event) => setPayerPhone(event.target.value)}
-                                        placeholder="65999999999"
-                                        inputMode="tel"
-                                    />
-                                </label>
-                            </div>
-                        )}
-
-                        <div className={styles.paymentOptions}>
-                            <div
-                                className={`${styles.option} ${checkoutMethod === 'ONLINE' ? styles.activeOption : ''} ${!config.onlineEnabled ? styles.optionDisabled : ''}`}
-                                onClick={() => config.onlineEnabled && setCheckoutMethod('ONLINE')}
-                            >
-                                <QrCode size={24} color={checkoutMethod === 'ONLINE' ? 'var(--secondary)' : 'var(--text-dim)'} />
-                                <div className={styles.paymentTextBlock}>
-                                    <span className={styles.paymentLabel}>Pagamento Online</span>
-                                    <span className={styles.paymentHint}>
-                                        Pix ou cartao de credito/debito.
-                                    </span>
+                            {profileNeedsCompletion && (
+                                <div className={styles.fieldGrid}>
+                                    <label className={styles.field}>
+                                        <span>Nome</span>
+                                        <input
+                                            className={styles.input}
+                                            value={payerName}
+                                            placeholder="Nome completo"
+                                            readOnly
+                                        />
+                                    </label>
+                                    <label className={styles.field}>
+                                        <span>E-mail</span>
+                                        <input
+                                            className={styles.input}
+                                            type="email"
+                                            value={payerEmail}
+                                            placeholder="voce@exemplo.com"
+                                            readOnly
+                                        />
+                                    </label>
+                                    <label className={styles.field}>
+                                        <span>CPF</span>
+                                        <input
+                                            className={styles.input}
+                                            value={formatTaxId(payerDocument)}
+                                            onChange={(event) => setPayerDocument(formatTaxId(event.target.value))}
+                                            placeholder="000.000.000-00"
+                                            inputMode="numeric"
+                                        />
+                                    </label>
+                                    <label className={styles.field}>
+                                        <span>Celular</span>
+                                        <input
+                                            className={styles.input}
+                                            type="tel"
+                                            value={payerPhone}
+                                            onChange={(event) => setPayerPhone(event.target.value)}
+                                            placeholder="65999999999"
+                                            inputMode="tel"
+                                        />
+                                    </label>
                                 </div>
-                                <input type="radio" checked={checkoutMethod === 'ONLINE'} readOnly disabled={!config.onlineEnabled} />
-                            </div>
+                            )}
 
-                            {config.allowOnPickupPayment && (
+                            <div className={styles.paymentOptions}>
                                 <div
-                                    className={`${styles.option} ${checkoutMethod === 'ON_PICKUP' ? styles.activeOption : ''}`}
-                                    onClick={() => setCheckoutMethod('ON_PICKUP')}
+                                    className={`${styles.option} ${checkoutMethod === 'ONLINE' ? styles.activeOption : ''} ${!config.onlineEnabled ? styles.optionDisabled : ''}`}
+                                    onClick={() => config.onlineEnabled && setCheckoutMethod('ONLINE')}
                                 >
-                                    <Wallet size={24} color={checkoutMethod === 'ON_PICKUP' ? 'var(--secondary)' : 'var(--text-dim)'} />
+                                    <QrCode size={24} color={checkoutMethod === 'ONLINE' ? 'var(--secondary)' : 'var(--text-dim)'} />
                                     <div className={styles.paymentTextBlock}>
-                                        <span className={styles.paymentLabel}>Pagar no Balcao</span>
+                                        <span className={styles.paymentLabel}>Pagamento Online</span>
                                         <span className={styles.paymentHint}>
-                                            O pedido sai confirmado e o pagamento fica para a retirada.
+                                            Pix ou cartao de credito/debito.
                                         </span>
                                     </div>
-                                    <input type="radio" checked={checkoutMethod === 'ON_PICKUP'} readOnly />
+                                    <input type="radio" checked={checkoutMethod === 'ONLINE'} readOnly disabled={!config.onlineEnabled} />
+                                </div>
+
+                                {config.allowOnPickupPayment && (
+                                    <div
+                                        className={`${styles.option} ${checkoutMethod === 'ON_PICKUP' ? styles.activeOption : ''}`}
+                                        onClick={() => setCheckoutMethod('ON_PICKUP')}
+                                    >
+                                        <Wallet size={24} color={checkoutMethod === 'ON_PICKUP' ? 'var(--secondary)' : 'var(--text-dim)'} />
+                                        <div className={styles.paymentTextBlock}>
+                                            <span className={styles.paymentLabel}>Pagar no Balcao</span>
+                                            <span className={styles.paymentHint}>
+                                                O pedido sai confirmado e o pagamento fica para a retirada.
+                                            </span>
+                                        </div>
+                                        <input type="radio" checked={checkoutMethod === 'ON_PICKUP'} readOnly />
+                                    </div>
+                                )}
+                            </div>
+
+                            {!config.onlineEnabled && !config.allowOnPickupPayment && (
+                                <div className={styles.error}>
+                                    <AlertCircle size={18} /> Nenhuma forma de pagamento esta disponivel no momento.
                                 </div>
                             )}
-                        </div>
 
-                        {!config.onlineEnabled && !config.allowOnPickupPayment && (
-                            <div className={styles.error}>
-                                <AlertCircle size={18} /> Nenhuma forma de pagamento esta disponivel no momento.
-                            </div>
-                        )}
-
-                        {error && (
-                            <div className={styles.error}>
-                                <AlertCircle size={18} /> {error}
-                            </div>
-                        )}
-
-                        <button className={styles.confirmBtn} disabled={!canCreateOrder || savingProfile} onClick={handleCreateOrder}>
-                            {creatingOrder ? (
-                                <><Loader2 size={20} className={styles.spin} /> Processando...</>
-                            ) : savingProfile ? (
-                                <><Loader2 size={20} className={styles.spin} /> Salvando perfil...</>
-                            ) : checkoutMethod === 'ONLINE' ? (
-                                <><CheckCircle2 size={24} strokeWidth={2.5} /> Ir para pagamento online</>
-                            ) : (
-                                <><CheckCircle2 size={24} strokeWidth={2.5} /> Finalizar pedido</>
+                            {error && (
+                                <div className={styles.error}>
+                                    <AlertCircle size={18} /> {error}
+                                </div>
                             )}
-                        </button>
-                    </div>
-                </section>
+
+                            <button className={styles.confirmBtn} disabled={!canCreateOrder || savingProfile} onClick={handleCreateOrder}>
+                                {creatingOrder ? (
+                                    <><Loader2 size={20} className={styles.spin} /> Processando...</>
+                                ) : savingProfile ? (
+                                    <><Loader2 size={20} className={styles.spin} /> Salvando perfil...</>
+                                ) : checkoutMethod === 'ONLINE' ? (
+                                    <><CheckCircle2 size={24} strokeWidth={2.5} /> Ir para pagamento online</>
+                                ) : (
+                                    <><CheckCircle2 size={24} strokeWidth={2.5} /> Finalizar pedido</>
+                                )}
+                            </button>
+                        </div>
+                    </section>
+                ) : (
+                    <section className={styles.paymentSection} style={{ marginTop: '2rem', textAlign: 'center', padding: '3rem 2rem' }}>
+                        <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ 
+                                background: 'rgba(var(--primary-rgb), 0.1)', 
+                                padding: '1rem', 
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <AlertCircle size={40} color="var(--primary)" />
+                            </div>
+                        </div>
+                        <h2 className={styles.infoBoxTitle} style={{ justifyContent: 'center', marginBottom: '1rem', fontSize: '1.25rem' }}>
+                            Vendas temporariamente suspensas
+                        </h2>
+                        <p className={styles.infoBoxText} style={{ maxWidth: '400px', margin: '0 auto', lineHeight: '1.6' }}>
+                            As vendas estão suspensas no momento. Voltamos em breve! Aguarde nosso comunicado.
+                        </p>
+                    </section>
+                )}
             </>
         );
     }
