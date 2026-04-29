@@ -144,6 +144,7 @@ export class AdminService {
             priceCents: product.priceCents,
             categoryId: product.categoryId,
             imageUrl: this.uploadsService.normalizePublicUrl(product.imageUrl),
+            isSpecialToday: product.isSpecialToday,
             isActive: product.isActive,
             stockMode: product.stockMode,
             stockQty: product.stockQty,

@@ -71,6 +71,10 @@ export class CreateProductDto {
     @IsInt()
     @IsOptional()
     stockQty?: number;
+
+    @IsBoolean()
+    @IsOptional()
+    isSpecialToday?: boolean;
 }
 
 export class UpdateProductDto {
@@ -109,6 +113,10 @@ export class UpdateProductDto {
     @IsNumber()
     @IsOptional()
     stockQty?: number;
+
+    @IsBoolean()
+    @IsOptional()
+    isSpecialToday?: boolean;
 }
 
 export class UpdateSettingsDto {

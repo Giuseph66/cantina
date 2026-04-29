@@ -26,7 +26,10 @@ export class CatalogService {
                     : {}),
             },
             include: { category: true },
-            orderBy: { name: 'asc' },
+            orderBy: [
+                { isSpecialToday: 'desc' },
+                { name: 'asc' },
+            ],
         });
 
         return products.map(product => ({

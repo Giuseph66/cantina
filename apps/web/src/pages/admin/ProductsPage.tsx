@@ -11,6 +11,7 @@ import adminStyles from './Admin.module.css';
 interface Product {
     id: string; name: string; priceCents: number; isActive: boolean; categoryId: string;
     stockMode: 'UNLIMITED' | 'CONTROLLED'; stockQty: number; description: string | null; imageUrl: string | null;
+    isSpecialToday: boolean;
     hasOrderHistory?: boolean;
     category: { name: string };
 }
@@ -44,7 +45,7 @@ function ProductsPage() {
 
     const initialForm = {
         name: '', description: '', priceCentsStr: '', categoryId: '',
-        stockMode: 'UNLIMITED' as 'UNLIMITED' | 'CONTROLLED', stockQty: 0, isActive: true, imageUrl: ''
+        stockMode: 'UNLIMITED' as 'UNLIMITED' | 'CONTROLLED', stockQty: 0, isActive: true, imageUrl: '', isSpecialToday: false
     };
     const [formData, setFormData] = useState(initialForm);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -96,7 +97,7 @@ function ProductsPage() {
             name: p.name, description: p.description || '',
             priceCentsStr: (p.priceCents / 100).toFixed(2),
             categoryId: p.categoryId, stockMode: p.stockMode,
-            stockQty: p.stockQty, isActive: p.isActive, imageUrl: p.imageUrl || ''
+            stockQty: p.stockQty, isActive: p.isActive, imageUrl: p.imageUrl || '', isSpecialToday: p.isSpecialToday
         });
         setSelectedFile(null);
         setIsModalOpen(true);
@@ -153,6 +154,7 @@ function ProductsPage() {
                 stockMode: formData.stockMode,
                 stockQty: formData.stockMode === 'CONTROLLED' ? formData.stockQty : undefined,
                 isActive: formData.isActive,
+                isSpecialToday: formData.isSpecialToday,
                 imageUrl: uploadedUrl || undefined
             };
             if (editingId) {
@@ -282,6 +284,9 @@ function ProductsPage() {
                             <div className={styles.cardBody}>
                                 <div className={styles.cardTop}>
                                     <h3 className={styles.cardName}>{p.name}</h3>
+                                    {p.isSpecialToday && (
+                                        <span className={styles.badgeSpecial}>Especial de Hoje</span>
+                                    )}
                                 </div>
                                 {p.description && <p className={styles.cardDesc}>{p.description}</p>}
                                 <div style={{ marginBottom: '1rem' }}>
@@ -440,6 +445,18 @@ function ProductsPage() {
                                         placeholder="Ex: Pão de forma integral, queijo mussarela, presunto..."
                                     />
                                 </div>
+
+                                <label className={adminStyles.checkboxLabel} style={{ background: 'var(--bg-main)', padding: '1.5rem', borderRadius: '1.25rem' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.isSpecialToday}
+                                        onChange={e => setFormData({ ...formData, isSpecialToday: e.target.checked })}
+                                    />
+                                    <div>
+                                        <div style={{ fontWeight: 900, color: 'var(--primary)' }}>DESTACAR COMO ESPECIAL DE HOJE</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontWeight: 600 }}>Este item aparece na categoria “Especiais de Hoje” da tela inicial.</div>
+                                    </div>
+                                </label>
 
                                 {editingId && (
                                     <label className={adminStyles.checkboxLabel} style={{ background: 'var(--bg-main)', padding: '1.5rem', borderRadius: '1.25rem' }}>

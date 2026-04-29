@@ -12,6 +12,7 @@ interface Product {
     priceCents: number; imageUrl: string | null;
     stockMode: 'UNLIMITED' | 'CONTROLLED'; stockQty: number;
     categoryId: string;
+    isSpecialToday: boolean;
 }
 
 function formatCurrency(cents: number) {
@@ -27,7 +28,7 @@ export default function LandingPage() {
     const searchTerm = searchParams.get('s') || '';
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
-    const [activeTab, setActiveTab] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<string | null>('especiais');
     const [loading, setLoading] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -57,9 +58,7 @@ export default function LandingPage() {
         if (activeTab === null) {
             matchesTab = true;
         } else if (activeTab === 'especiais') {
-            // Mocking 'Specials' by showing a few top priced/random items 
-            // In a real scenario, this would check an `isSpecial` flag in the DB.
-            matchesTab = p.priceCents >= 750;
+            matchesTab = p.isSpecialToday;
         } else {
             matchesTab = p.categoryId === activeTab;
         }
@@ -67,6 +66,9 @@ export default function LandingPage() {
         const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase()));
         return matchesTab && matchesSearch;
+    }).sort((a, b) => {
+        if (a.isSpecialToday === b.isSpecialToday) return 0;
+        return a.isSpecialToday ? -1 : 1;
     });
 
     // Close modal on escape
