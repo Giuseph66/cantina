@@ -16,7 +16,8 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
-        "test:e2e": "jest --config ./test/jest-e2e.json"
+        "test:e2e": "jest --config ./test/jest-e2e.json",
+        "dev:seed": "npx prisma migrate dev && npx prisma db seed"
     },
     "dependencies": {
         "@cantina/shared": "*",
