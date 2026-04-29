@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useApi } from '../../hooks/useApi';
 import {
     Save, Settings as SettingsIcon, ShieldAlert,
-    RotateCcw, Clock, CreditCard, RefreshCw, Ticket, Filter, X,
+    RotateCcw, Clock, Wrench, RefreshCw, Ticket, Filter, X, Database, Play, Download,
 } from 'lucide-react';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import styles from './SettingsPage.module.css';
 
-type Tab = 'geral' | 'operacao' | 'auditoria';
+type Tab = 'geral' | 'operacao' | 'auditoria' | 'backups';
 type TicketValidityMode = 'DURATION' | 'UNTIL_TIME';
 type TicketWindowUnit = 'MINUTES' | 'HOURS';
 
@@ -33,6 +33,33 @@ interface AuditLog {
     payloadJson: Record<string, unknown> | null;
     createdAt: string;
     actor: { id: string; name: string; role: string } | null;
+}
+
+interface BackupEntry {
+    id: string;
+    source: 'cron' | 'manual';
+    status: 'RUNNING' | 'COMPLETED' | 'FAILED';
+    createdAt: string | null;
+    completedAt: string | null;
+    failedAt: string | null;
+    expiresAt: string | null;
+    tableCount: number;
+    rowCount: number;
+    imageCount: number;
+    imageBytes: number;
+    errorMessage: string | null;
+}
+
+interface BackupOperationProgress {
+    kind: 'BACKUP' | 'RESTORE' | null;
+    status: 'IDLE' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+    progress: number;
+    stage: string;
+    backupId: string | null;
+    startedAt: string | null;
+    updatedAt: string | null;
+    finishedAt: string | null;
+    errorMessage: string | null;
 }
 
 const PAYLOAD_LABELS: Record<string, string> = {
@@ -203,6 +230,11 @@ export default function SettingsPage() {
     const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
     const [logActionFilter, setLogActionFilter] = useState('');
     const LOG_LIMIT = 50;
+    const [backups, setBackups] = useState<BackupEntry[]>([]);
+    const [backupsLoading, setBackupsLoading] = useState(false);
+    const [backupRunning, setBackupRunning] = useState(false);
+    const [restoringBackupId, setRestoringBackupId] = useState<string | null>(null);
+    const [backupProgress, setBackupProgress] = useState<BackupOperationProgress | null>(null);
 
     useEffect(() => {
         api.get<Settings>('/admin/settings')
@@ -213,7 +245,32 @@ export default function SettingsPage() {
 
     useEffect(() => {
         if (tab === 'auditoria') loadLogs(0, logActionFilter);
+        if (tab === 'backups') void loadBackups();
     }, [tab]);
+
+    useEffect(() => {
+        if (tab !== 'backups') return;
+
+        let cancelled = false;
+        const pollProgress = async () => {
+            try {
+                const res = await api.get<BackupOperationProgress>('/admin/backups/progress');
+                if (!cancelled) setBackupProgress(res);
+            } catch (err) {
+                if (!cancelled) console.error(err);
+            }
+        };
+
+        void pollProgress();
+        const timer = window.setInterval(() => {
+            void pollProgress();
+        }, 1200);
+
+        return () => {
+            cancelled = true;
+            window.clearInterval(timer);
+        };
+    }, [api, tab]);
 
     useEffect(() => {
         if (!isTicketWindowModalOpen) return;
@@ -238,6 +295,74 @@ export default function SettingsPage() {
         setLogActionFilter(action);
         setExpandedLogId(null);
         loadLogs(0, action);
+    }
+
+    async function loadBackups() {
+        setBackupsLoading(true);
+        try {
+            const res = await api.get<BackupEntry[]>('/admin/backups');
+            setBackups(res);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setBackupsLoading(false);
+        }
+    }
+
+    async function handleRunBackup() {
+        if (backupProgress?.status === 'RUNNING') {
+            alert('Já existe uma operação em andamento.');
+            return;
+        }
+        setBackupRunning(true);
+        try {
+            await api.post('/admin/backups/run', {});
+            await loadBackups();
+            alert('Backup executado com sucesso.');
+        } catch (err: any) {
+            alert(err.message.replace(/^\[\d{3}\]\s*/, ''));
+        } finally {
+            setBackupRunning(false);
+            try {
+                const res = await api.get<BackupOperationProgress>('/admin/backups/progress');
+                setBackupProgress(res);
+            } catch {
+                // noop
+            }
+        }
+    }
+
+    async function handleRestoreBackup(backup: BackupEntry) {
+        if (backupProgress?.status === 'RUNNING') {
+            alert('Já existe uma operação em andamento.');
+            return;
+        }
+        if (backup.status !== 'COMPLETED') {
+            alert('Somente backups concluídos podem ser restaurados.');
+            return;
+        }
+
+        const shouldRestore = window.confirm(
+            `Restaurar o backup ${backup.id}?\n\nIsso sobrescreve dados atuais e arquivos de imagem.`,
+        );
+        if (!shouldRestore) return;
+
+        setRestoringBackupId(backup.id);
+        try {
+            await api.post(`/admin/backups/${backup.id}/restore`, {});
+            await loadBackups();
+            alert('Backup restaurado com sucesso.');
+        } catch (err: any) {
+            alert(err.message.replace(/^\[\d{3}\]\s*/, ''));
+        } finally {
+            setRestoringBackupId(null);
+            try {
+                const res = await api.get<BackupOperationProgress>('/admin/backups/progress');
+                setBackupProgress(res);
+            } catch {
+                // noop
+            }
+        }
     }
 
     function openTicketWindowModal() {
@@ -307,7 +432,9 @@ export default function SettingsPage() {
         { id: 'geral', label: 'Geral', icon: <SettingsIcon size={16} /> },
         { id: 'operacao', label: 'Operação', icon: <Ticket size={16} /> },
         { id: 'auditoria', label: 'Auditoria', icon: <ShieldAlert size={16} /> },
+        { id: 'backups', label: 'Backups', icon: <Database size={16} /> },
     ];
+    const operationRunning = backupProgress?.status === 'RUNNING';
 
     if (loading) return (
         <AdminLayout title="Configurações">
@@ -316,7 +443,7 @@ export default function SettingsPage() {
     );
 
     return (
-        <AdminLayout title="Configurações" subtitle="Ajustes globais, operação e auditoria">
+        <AdminLayout title="Configurações" subtitle="Ajustes globais, operação, auditoria e backups">
             <div className={styles.page}>
                 {/* Tab nav */}
                 <div className={styles.tabNav}>
@@ -334,21 +461,12 @@ export default function SettingsPage() {
                     {tab === 'geral' && (
                         <div className={styles.section}>
                             <div className={styles.sectionHeader}>
-                                <CreditCard size={20} />
+                                <Wrench size={20} />
                                 <div>
-                                    <h3 className={styles.sectionTitle}>Pagamentos & Contato</h3>
-                                    <p className={styles.sectionDesc}>Configurações financeiras e de notificação</p>
+                                    <h3 className={styles.sectionTitle}>Regras Gerais</h3>
+                                    <p className={styles.sectionDesc}>Defina as regras gerais da cantina</p>
                                 </div>
                             </div>
-
-                            <div className={styles.field}>
-                                <label className={styles.label}>Chave PIX Principal</label>
-                                <input className={styles.input} placeholder="CNPJ, e-mail ou chave aleatória"
-                                    value={settings.pixKey}
-                                    onChange={e => setSettings(s => ({ ...s, pixKey: e.target.value }))} />
-                                <span className={styles.hint}>Usada para gerar QR Code de pagamento dos clientes.</span>
-                            </div>
-
                             <Toggle
                                 checked={settings.allowOnPickupPayment}
                                 onChange={v => setSettings(s => ({ ...s, allowOnPickupPayment: v }))}
@@ -552,6 +670,136 @@ export default function SettingsPage() {
                                         </div>
                                     )}
                                 </>
+                            )}
+                        </div>
+                    )}
+
+                    {/* ── BACKUPS ── */}
+                    {tab === 'backups' && (
+                        <div className={styles.section}>
+                            <div className={styles.auditHeader}>
+                                <div className={styles.sectionHeader} style={{ margin: 0 }}>
+                                    <Database size={20} />
+                                    <div>
+                                        <h3 className={styles.sectionTitle}>Backups (Firestore)</h3>
+                                        <p className={styles.sectionDesc}>Backup automático diário às 00:00 com retenção de 7 dias.</p>
+                                    </div>
+                                </div>
+                                <div className={styles.auditControls}>
+                                    <button
+                                        type="button"
+                                        className={styles.btnRefresh}
+                                        onClick={() => void loadBackups()}
+                                        disabled={backupsLoading}
+                                    >
+                                        <RefreshCw size={15} />
+                                        Atualizar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.btnRefresh}
+                                        onClick={() => void handleRunBackup()}
+                                        disabled={backupRunning || operationRunning}
+                                    >
+                                        <Play size={15} />
+                                        {backupRunning || (operationRunning && backupProgress?.kind === 'BACKUP')
+                                            ? 'Executando...'
+                                            : 'Executar backup'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {backupProgress && backupProgress.status !== 'IDLE' && (
+                                <div className={styles.progressPanel}>
+                                    <div className={styles.progressHeader}>
+                                        <p className={styles.progressTitle}>
+                                            {backupProgress.kind === 'RESTORE' ? 'Restauração' : 'Backup'}{' '}
+                                            {backupProgress.status === 'RUNNING'
+                                                ? 'em andamento'
+                                                : backupProgress.status === 'COMPLETED'
+                                                    ? 'concluído'
+                                                    : 'falhou'}
+                                        </p>
+                                        <span className={styles.progressPct}>
+                                            {Math.max(0, Math.min(100, Math.round(backupProgress.progress)))}%
+                                        </span>
+                                    </div>
+                                    <div className={styles.progressTrack}>
+                                        <div
+                                            className={styles.progressFill}
+                                            style={{ width: `${Math.max(0, Math.min(100, Math.round(backupProgress.progress)))}%` }}
+                                        />
+                                    </div>
+                                    <p className={styles.progressStage}>{backupProgress.stage}</p>
+                                    {backupProgress.errorMessage && (
+                                        <p className={styles.backupError}>{backupProgress.errorMessage}</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {backupsLoading ? (
+                                <div className={styles.loading}>Carregando backups...</div>
+                            ) : backups.length === 0 ? (
+                                <div className={styles.auditEmpty}>Nenhum backup registrado.</div>
+                            ) : (
+                                <div className={styles.backupsList}>
+                                    {backups.map((backup) => (
+                                        <div key={backup.id} className={styles.backupCard}>
+                                            <div className={styles.backupHead}>
+                                                <div>
+                                                    <p className={styles.backupId}>{backup.id}</p>
+                                                    <p className={styles.backupMeta}>
+                                                        {backup.createdAt ? new Date(backup.createdAt).toLocaleString('pt-BR') : 'Sem data'}
+                                                        {' · '}
+                                                        {backup.source === 'cron' ? 'Automático' : 'Manual'}
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    className={`${styles.backupStatus} ${backup.status === 'COMPLETED'
+                                                        ? styles.backupStatusCompleted
+                                                        : backup.status === 'RUNNING'
+                                                            ? styles.backupStatusRunning
+                                                            : styles.backupStatusFailed
+                                                        }`}
+                                                >
+                                                    {backup.status}
+                                                </span>
+                                            </div>
+
+                                            <div className={styles.backupStats}>
+                                                <span>Tabelas: <strong>{backup.tableCount}</strong></span>
+                                                <span>Registros: <strong>{backup.rowCount}</strong></span>
+                                                <span>Imagens: <strong>{backup.imageCount}</strong></span>
+                                                <span>Expira: <strong>{backup.expiresAt ? new Date(backup.expiresAt).toLocaleDateString('pt-BR') : '—'}</strong></span>
+                                            </div>
+
+                                            {backup.errorMessage && (
+                                                <p className={styles.backupError}>{backup.errorMessage}</p>
+                                            )}
+
+                                            <div className={styles.backupActions}>
+                                                <button
+                                                    type="button"
+                                                    className={styles.pageBtn}
+                                                    onClick={() => void handleRestoreBackup(backup)}
+                                                    disabled={
+                                                        backup.status !== 'COMPLETED'
+                                                        || restoringBackupId === backup.id
+                                                        || operationRunning
+                                                    }
+                                                >
+                                                    <Download size={14} />
+                                                    {restoringBackupId === backup.id
+                                                        || (operationRunning
+                                                            && backupProgress?.kind === 'RESTORE'
+                                                            && backupProgress.backupId === backup.id)
+                                                        ? 'Restaurando...'
+                                                        : 'Restaurar'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     )}

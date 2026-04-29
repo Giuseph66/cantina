@@ -13,6 +13,7 @@ import {
 import { OrderStatus } from '../common/enums';
 import { UploadsService } from '../uploads/uploads.service';
 import { AppSettings, AppSettingsService } from '../common/services/app-settings.service';
+import { BackupsService } from '../backups/backups.service';
 
 @Injectable()
 export class AdminService {
@@ -21,6 +22,7 @@ export class AdminService {
         private readonly audit: AuditService,
         private readonly uploadsService: UploadsService,
         private readonly appSettings: AppSettingsService,
+        private readonly backupsService: BackupsService,
     ) { }
 
     // ─── Categories ────────────────────────────────────────────────────────────
@@ -212,6 +214,27 @@ export class AdminService {
             })),
             total,
         };
+    }
+
+    // ─── Backups ───────────────────────────────────────────────────────────────
+    async listBackups() {
+        return this.backupsService.listBackups(30);
+    }
+
+    async runBackup(actorId: string) {
+        const result = await this.backupsService.createBackup('manual');
+        await this.audit.log(actorId, 'BACKUP_CREATED', 'Backup', result.id, result as Record<string, unknown>);
+        return result;
+    }
+
+    getBackupProgress() {
+        return this.backupsService.getOperationProgress();
+    }
+
+    async restoreBackup(backupId: string, actorId: string) {
+        const result = await this.backupsService.restoreBackup(backupId);
+        await this.audit.log(actorId, 'BACKUP_RESTORED', 'Backup', backupId, result as Record<string, unknown>);
+        return result;
     }
 
     // ─── Settings ──────────────────────────────────────────────────────────────

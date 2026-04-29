@@ -20,6 +20,7 @@ import { ReportsModule } from './reports/reports.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { CreditNotesModule } from './credit-notes/credit-notes.module';
 import { PaymentsModule } from './payments/payments.module';
+import { BackupsModule } from './backups/backups.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
@@ -49,6 +50,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
         UploadsModule,
         CreditNotesModule,
         PaymentsModule,
+        BackupsModule,
     ],
 })
 export class AppModule implements NestModule {

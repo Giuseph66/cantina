@@ -109,4 +109,25 @@ export class AdminController {
             action || undefined,
         );
     }
+
+    // Backups
+    @Get('backups')
+    getBackups() {
+        return this.adminService.listBackups();
+    }
+
+    @Post('backups/run')
+    runBackup(@CurrentUser() user: User) {
+        return this.adminService.runBackup(user.id);
+    }
+
+    @Get('backups/progress')
+    getBackupProgress() {
+        return this.adminService.getBackupProgress();
+    }
+
+    @Post('backups/:id/restore')
+    restoreBackup(@Param('id') id: string, @CurrentUser() user: User) {
+        return this.adminService.restoreBackup(id, user.id);
+    }
 }
