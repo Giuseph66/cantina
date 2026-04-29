@@ -4,12 +4,14 @@ import { useApi } from '../../hooks/useApi';
 import { Plus, Edit2, Trash2, X, Search, Package, ImageOff } from 'lucide-react';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { CategoriesManagerModal } from '../../components/admin/CategoriesManagerModal';
+import { StockBulkModal } from '../../components/admin/StockBulkModal';
 import styles from './ProductsPage.module.css';
 import adminStyles from './Admin.module.css';
 
 interface Product {
     id: string; name: string; priceCents: number; isActive: boolean; categoryId: string;
     stockMode: 'UNLIMITED' | 'CONTROLLED'; stockQty: number; description: string | null; imageUrl: string | null;
+    hasOrderHistory?: boolean;
     category: { name: string };
 }
 interface Category { id: string; name: string; }
@@ -35,6 +37,7 @@ function ProductsPage() {
     const [filterCat, setFilterCat] = useState<string | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isStockModalOpen, setIsStockModalOpen] = useState(false);
     const [isCategoriesModalOpen, setIsCategoriesModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
@@ -45,6 +48,7 @@ function ProductsPage() {
     };
     const [formData, setFormData] = useState(initialForm);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const editingProduct = editingId ? products.find(p => p.id === editingId) : null;
 
     useEffect(() => { fetchData(); }, []);
 
@@ -98,12 +102,30 @@ function ProductsPage() {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: string, name: string) => {
+    const handleDeactivate = async (id: string, name: string) => {
         if (!window.confirm(`Desativar o produto "${name}"?`)) return;
         try {
             await api.delete(`/admin/products/${id}`);
             fetchData();
         } catch (err: any) { alert(err.message); }
+    };
+
+    const handleHardDelete = async (id: string, name: string) => {
+        if (!window.confirm(`Excluir definitivamente o produto inativo "${name}"? Essa ação não pode ser desfeita.`)) return;
+        try {
+            await api.delete(`/admin/products/${id}`);
+            if (editingId === id) {
+                setIsModalOpen(false);
+            }
+            fetchData();
+        } catch (err: any) {
+            const message = String(err?.message ?? '');
+            if (message.includes('[409]')) {
+                alert('Não foi possível excluir definitivamente: este produto já tem histórico de pedidos. Ele pode permanecer apenas como inativo.');
+                return;
+            }
+            alert(message || 'Falha ao excluir produto.');
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -147,6 +169,15 @@ function ProductsPage() {
         }
     };
 
+    const handleBulkStockSave = async (updates: { productId: string; qty: number }[]) => {
+        try {
+            await api.patch('/admin/products/bulk-stock', { items: updates });
+            fetchData();
+        } catch (err: any) {
+            throw err;
+        }
+    };
+
     const handleCloseCategoriesModal = async () => {
         setIsCategoriesModalOpen(false);
 
@@ -171,14 +202,19 @@ function ProductsPage() {
     };
 
     return (
-        <AdminLayout title="Catálogo de Produtos" subtitle="Gerencie seus itens e categorias">
+        <AdminLayout title="Produtos" subtitle="Gerencie seus itens e categorias">
             <div className={styles.header}>
                 <div className={styles.headerLeft}>
-                    <h2 className={styles.title}>Produtos</h2>
+                    <h2 className={styles.title}>Lista de Produtos</h2>
                 </div>
-                <button className={styles.newBtn} onClick={handleOpenNew}>
-                    <Plus size={20} strokeWidth={3} /> NOVO PRODUTO
-                </button>
+                <div className={styles.headerActions}>
+                    <button className={styles.stockBtn} onClick={() => setIsStockModalOpen(true)}>
+                        <Package size={20} /> LANÇAMENTO DE ESTOQUE
+                    </button>
+                    <button className={styles.newBtn} onClick={handleOpenNew}>
+                        <Plus size={20} strokeWidth={3} /> NOVO PRODUTO
+                    </button>
+                </div>
             </div>
 
             <div className={styles.toolbar}>
@@ -262,8 +298,16 @@ function ProductsPage() {
                                 <button className={styles.btnEdit} onClick={() => handleOpenEdit(p)}>
                                     <Edit2 size={16} /> Editar
                                 </button>
-                                {p.isActive && (
-                                    <button className={styles.btnDelete} title="Desativar" onClick={() => handleDelete(p.id, p.name)}>
+                                {p.isActive ? (
+                                    <button className={styles.btnDelete} title="Desativar" onClick={() => handleDeactivate(p.id, p.name)}>
+                                        <Trash2 size={18} />
+                                    </button>
+                                ) : !p.hasOrderHistory ? (
+                                    <button className={styles.btnDelete} title="Excluir definitivamente" onClick={() => handleHardDelete(p.id, p.name)}>
+                                        <Trash2 size={18} />
+                                    </button>
+                                ) : (
+                                    <button className={styles.btnDelete} title="Produto com histórico (não pode excluir definitivamente)" disabled>
                                         <Trash2 size={18} />
                                     </button>
                                 )}
@@ -410,6 +454,27 @@ function ProductsPage() {
                                         </div>
                                     </label>
                                 )}
+
+                                {editingProduct && !editingProduct.isActive && !editingProduct.hasOrderHistory && (
+                                    <div className={styles.modalDangerZone}>
+                                        <div className={styles.modalDangerText}>Produto inativo: você pode excluir definitivamente.</div>
+                                        <button
+                                            type="button"
+                                            className={styles.modalDangerBtn}
+                                            onClick={() => handleHardDelete(editingProduct.id, editingProduct.name)}
+                                        >
+                                            <Trash2 size={16} /> EXCLUIR DEFINITIVAMENTE
+                                        </button>
+                                    </div>
+                                )}
+
+                                {editingProduct && !editingProduct.isActive && !!editingProduct.hasOrderHistory && (
+                                    <div className={styles.modalDangerZone}>
+                                        <div className={styles.modalDangerText}>
+                                            Este produto está inativo, mas possui histórico de pedidos e não pode ser excluído definitivamente.
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.modalFormFooter}>
@@ -428,6 +493,13 @@ function ProductsPage() {
             <CategoriesManagerModal
                 isOpen={isCategoriesModalOpen}
                 onClose={handleCloseCategoriesModal}
+            />
+
+            <StockBulkModal
+                isOpen={isStockModalOpen}
+                onClose={() => setIsStockModalOpen(false)}
+                products={products}
+                onSave={handleBulkStockSave}
             />
         </AdminLayout>
     );

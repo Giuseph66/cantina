@@ -63,6 +63,33 @@
     background: #4e352d;
 }
 
+.headerActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.stockBtn {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.stockBtn:hover {
+    background: var(--bg-surface);
+    transform: translateY(-2px);
+}
+
 /* ── Toolbar (search + filters) ─────────────────────────────────────── */
 .toolbar {
     display: flex;
@@ -76,17 +103,19 @@
     box-shadow: var(--shadow-sm);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 800px) {
     .toolbar {
         flex-direction: row;
         align-items: center;
+        gap: 2rem;
         padding: 1.25rem 2rem;
     }
 }
 
 .searchWrapper {
     position: relative;
-    flex: 1;
+    width: 100%;
+    max-width: 480px;
 }
 
 .searchIcon {
@@ -123,6 +152,8 @@
     padding-bottom: 0.5rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    flex: 1;
+    justify-content: flex-end;
 }
 
 .filters::-webkit-scrollbar {
@@ -335,6 +366,16 @@
     color: white;
 }
 
+.btnDelete:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.btnDelete:disabled:hover {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
 /* ── Badges ─────────────────────────────────────────────────────────── */
 .badge {
     padding: 0.35rem 0.75rem;
@@ -420,6 +461,44 @@
     box-shadow: var(--shadow-sm);
 }
 
+.modalDangerZone {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: #fef2f2;
+    border-radius: 1rem;
+}
+
+.modalDangerText {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #b91c1c;
+}
+
+.modalDangerBtn {
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    background: #fff;
+    color: #dc2626;
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    white-space: nowrap;
+}
+
+.modalDangerBtn:hover {
+    background: #dc2626;
+    color: #fff;
+}
+
 @media (max-width: 640px) {
     .modalFormBody {
         padding: 1.25rem;
@@ -439,5 +518,10 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 0.75rem;
+    }
+
+    .modalDangerZone {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

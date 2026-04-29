@@ -25,13 +25,14 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
     const { logout } = useAuth();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const isDrawerCollapsed = isCollapsed && !isMobileOpen;
 
     const isActive = (path: string) => location.pathname === path;
 
     const go = (path: string) => { navigate(path); setIsMobileOpen(false); };
 
     return (
-        <div className={`${styles.page} ${isCollapsed ? styles.pageCollapsed : ''}`}>
+        <div className={`${styles.page} ${isDrawerCollapsed ? styles.pageCollapsed : ''}`}>
             {/* Mobile Header */}
             <header className={styles.mobileHeader}>
                 <div className={styles.mobileLogo}>
@@ -45,89 +46,89 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
 
             {isMobileOpen && <div className={styles.overlay} onClick={() => setIsMobileOpen(false)} />}
 
-            <aside className={`${styles.sidebar} ${isMobileOpen ? styles.sidebarMobileOpen : ''} ${isCollapsed ? styles.sidebarCollapsed : ''}`}>
+            <aside className={`${styles.sidebar} ${isMobileOpen ? styles.sidebarMobileOpen : ''} ${isDrawerCollapsed ? styles.sidebarCollapsed : ''}`}>
                 <div className={styles.sidebarHeader}>
                     <div className={styles.logo}>
-                        <Store size={isCollapsed ? 28 : 32} strokeWidth={3} />
-                        {!isCollapsed && <span>Cantina</span>}
+                        <Store size={isDrawerCollapsed ? 28 : 32} strokeWidth={3} />
+                        {!isDrawerCollapsed && <span>Cantina</span>}
                     </div>
-                    {!isCollapsed && <span className={styles.logoSub}>Painel Administrativo</span>}
+                    {!isDrawerCollapsed && <span className={styles.logoSub}>Painel Administrativo</span>}
                 </div>
 
                 <nav className={styles.nav}>
                     {/* ── Administração ── */}
-                    <NavSection label="Administração" collapsed={isCollapsed} />
+                    <NavSection label="Administração" collapsed={isDrawerCollapsed} />
 
                     <button className={`${styles.navBtn} ${isActive('/admin') ? styles.activeNav : ''}`}
                         onClick={() => go('/admin')} title="Dashboard">
                         <TrendingUp size={20} />
-                        {!isCollapsed && <span>Dashboard</span>}
+                        {!isDrawerCollapsed && <span>Dashboard</span>}
                     </button>
 
                     <button className={`${styles.navBtn} ${isActive('/admin/products') ? styles.activeNav : ''}`}
                         onClick={() => go('/admin/products')} title="Produtos">
                         <Package size={20} />
-                        {!isCollapsed && <span>Produtos</span>}
+                        {!isDrawerCollapsed && <span>Produtos</span>}
                     </button>
 
                     <button className={`${styles.navBtn} ${isActive('/admin/orders') ? styles.activeNav : ''}`}
                         onClick={() => go('/admin/orders')} title="Pedidos">
                         <ClipboardList size={20} />
-                        {!isCollapsed && <span>Pedidos</span>}
+                        {!isDrawerCollapsed && <span>Pedidos</span>}
                     </button>
 
                     <button className={`${styles.navBtn} ${isActive('/admin/reports') ? styles.activeNav : ''}`}
                         onClick={() => go('/admin/reports')} title="Relatórios">
                         <BarChart3 size={20} />
-                        {!isCollapsed && <span>Relatórios</span>}
+                        {!isDrawerCollapsed && <span>Relatórios</span>}
                     </button>
 
                     <button className={`${styles.navBtn} ${isActive('/admin/users') ? styles.activeNav : ''}`}
                         onClick={() => go('/admin/users')} title="Usuários">
                         <Users size={20} />
-                        {!isCollapsed && <span>Usuários</span>}
+                        {!isDrawerCollapsed && <span>Usuários</span>}
                     </button>
 
                     <button className={`${styles.navBtn} ${isActive('/admin/settings') ? styles.activeNav : ''}`}
                         onClick={() => go('/admin/settings')} title="Configurações">
                         <SettingsIcon size={20} />
-                        {!isCollapsed && <span>Configurações</span>}
+                        {!isDrawerCollapsed && <span>Configurações</span>}
                     </button>
 
                     {/* ── Operação de Caixa ── */}
-                    <NavSection label="Operação de Caixa" collapsed={isCollapsed} />
+                    <NavSection label="Operação de Caixa" collapsed={isDrawerCollapsed} />
 
                     <button className={`${styles.navBtn} ${isActive('/cashier/scan') ? styles.activeNav : ''}`}
                         onClick={() => go('/cashier/scan')} title="Operador de Caixa">
                         <QrCode size={20} />
-                        {!isCollapsed && <span>Operador de Caixa</span>}
+                        {!isDrawerCollapsed && <span>Operador de Caixa</span>}
                     </button>
 
                     <button className={`${styles.navBtn} ${isActive('/cashier/counter') ? styles.activeNav : ''}`}
                         onClick={() => go('/cashier/counter')} title="Venda Balcão">
                         <Store size={20} />
-                        {!isCollapsed && <span>Venda Balcão</span>}
+                        {!isDrawerCollapsed && <span>Venda Balcão</span>}
                     </button>
 
                     <button className={`${styles.navBtn} ${isActive('/cashier/credit-notes') ? styles.activeNav : ''}`}
                         onClick={() => go('/cashier/credit-notes')} title="Notinhas">
                         <NotebookText size={20} />
-                        {!isCollapsed && <span>Notinhas</span>}
+                        {!isDrawerCollapsed && <span>Notinhas</span>}
                     </button>
 
                     <button className={`${styles.navBtn} ${isActive('/cashier/cash-open') ? styles.activeNav : ''}`}
                         onClick={() => go('/cashier/cash-open')} title="Gestão de Caixa">
                         <Wallet size={20} />
-                        {!isCollapsed && <span>Gestão de Caixa</span>}
+                        {!isDrawerCollapsed && <span>Gestão de Caixa</span>}
                     </button>
 
                     {/* ── Modo Cliente ── */}
-                    <NavSection label="Modo Cliente" collapsed={isCollapsed} />
+                    <NavSection label="Modo Cliente" collapsed={isDrawerCollapsed} />
 
                     <button className={`${styles.navBtn} ${isActive('/menu') ? styles.activeNav : ''}`}
                         onClick={() => go('/menu')} title="Ver Cardápio">
                         <ShoppingBag size={20} />
-                        {!isCollapsed && <span>Ver Cardápio</span>}
+                        {!isDrawerCollapsed && <span>Ver Cardápio</span>}
                     </button>
                 </nav>
 
@@ -136,11 +137,11 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
                         onClick={async () => { await logout(); navigate('/login'); }}
                         title="Sair">
                         <LogOut size={18} />
-                        {!isCollapsed && <span>Sair do Sistema</span>}
+                        {!isDrawerCollapsed && <span>Sair do Sistema</span>}
                     </button>
                     <button className={styles.collapseBtn} onClick={() => setIsCollapsed(c => !c)}
-                        title={isCollapsed ? 'Expandir' : 'Recolher'}>
-                        {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                        title={isDrawerCollapsed ? 'Expandir' : 'Recolher'}>
+                        {isDrawerCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
                     </button>
                 </div>
             </aside>

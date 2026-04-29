@@ -1,6 +1,8 @@
 import {
     IsString, IsInt, IsBoolean, IsOptional, IsEnum, IsNumber, IsUUID, Min, Max, MaxLength, Matches, IsIn,
+    ValidateNested, IsArray,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { StockMode, OrderStatus } from '../../common/enums';
 import type { TicketValidityMode } from '../../common/services/app-settings.service';
 
@@ -161,4 +163,22 @@ export class UpdateSettingsDto {
     @MaxLength(1000)
     @IsOptional()
     notificationEmails?: string;
+}
+export class BulkStockItemDto {
+    @IsUUID()
+    productId: string;
+
+    @IsInt()
+    qty: number;
+}
+
+export class BulkStockUpdateDto {
+    @IsOptional()
+    @IsBoolean()
+    isAbsolute?: boolean;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => BulkStockItemDto)
+    items: BulkStockItemDto[];
 }

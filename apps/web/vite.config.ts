@@ -11,8 +11,8 @@ export default defineConfig({
                 name: 'Cantina',
                 short_name: 'Cantina',
                 description: 'Sistema de cantina universitária',
-                theme_color: '#6366f1',
-                background_color: '#0f172a',
+                theme_color: '#5d4037',
+                background_color: '#fdfaf7',
                 display: 'standalone',
                 start_url: '/',
                 icons: [
@@ -35,11 +35,13 @@ export default defineConfig({
         port: 5173,
         proxy: {
             '/api': {
-                target: 'https://api-cantina.neurelix.com.br', //http://cantina-api.neurelix.com.br
+                //target: 'https://api-cantina.neurelix.com.br', 
+                target: 'http://localhost:3000',
                 changeOrigin: true,
             },
             '/uploads': {
-                target: 'https://api-cantina.neurelix.com.br', //http://cantina-api.neurelix.com.br
+                //target: 'https://api-cantina.neurelix.com.br', 
+                target: 'http://localhost:3000',
                 changeOrigin: true,
             },
         },

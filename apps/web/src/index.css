@@ -72,14 +72,20 @@ body.dark {
         radial-gradient(at 100% 100%, rgba(93, 64, 55, 0.06) 0px, transparent 50%);
 }
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 html,
 body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
     overflow-x: hidden;
     width: 100%;
     position: relative;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {

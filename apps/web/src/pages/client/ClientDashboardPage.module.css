@@ -259,32 +259,67 @@ body.dark .statCardDebt {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.85rem 1.1rem;
-    background: rgba(212, 163, 115, 0.1);
-    border: 1px solid rgba(212, 163, 115, 0.25);
-    border-radius: 1rem;
-    font-size: 0.875rem;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #8d6e63 100%);
+    border: none;
+    border-radius: 1.25rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    color: var(--primary);
+    color: white;
+    box-shadow: 0 8px 20px rgba(93, 64, 55, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.activeAlert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    to { left: 200%; }
+}
+
+.activeAlert svg {
+    color: var(--secondary);
+    filter: drop-shadow(0 0 8px rgba(212, 163, 115, 0.4));
+    animation: pulseIcon 2s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+.activeAlert strong {
+    color: var(--secondary);
 }
 
 .activeAlertBtn {
     margin-left: auto;
-    padding: 0.35rem 0.85rem;
-    border: 1px solid var(--primary);
+    padding: 0.45rem 1rem;
+    border: none;
     border-radius: var(--radius-full);
-    background: transparent;
+    background: white;
     color: var(--primary);
-    font-size: 0.78rem;
-    font-weight: 800;
+    font-size: 0.75rem;
+    font-weight: 900;
     cursor: pointer;
     transition: var(--transition-fast);
-    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .activeAlertBtn:hover {
-    background: var(--primary);
+    background: var(--secondary);
     color: white;
+    transform: translateY(-1px);
 }
 
 /* ── Tabs ── */
@@ -343,6 +378,274 @@ body.dark .tabBtnActive {
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
+    animation: slideUp 0.4s ease-out forwards;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+}
+
+.sectionTitleBlock h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0;
+}
+
+.sectionTitleBlock p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin: 0;
+}
+
+.filterToggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+.filterToggle:hover {
+    background: var(--bg-surface);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.filterActive {
+    border-color: var(--primary);
+    background: var(--bg-surface);
+}
+
+.filterBadge {
+    background: var(--primary);
+    color: white;
+    font-size: 0.7rem;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-left: 0.2rem;
+}
+
+/* ── Filter Drawer ── */
+.drawerOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(93, 64, 55, 0.2);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.drawerOpen {
+    opacity: 1;
+    visibility: visible;
+}
+
+.drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    background: #fdfaf7;
+    z-index: 1001;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.drawerOpen .drawer {
+    transform: translateX(0);
+}
+
+.drawerHeader {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.drawerTitle {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.drawerSubtitle {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.drawerClose {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: var(--transition-fast);
+}
+
+.drawerClose:hover {
+    color: var(--primary);
+    transform: rotate(90deg);
+}
+
+.drawerBody {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+}
+
+.groupLabel {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+}
+
+.statusGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.statusFilterCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    text-align: left;
+    width: 100%;
+}
+
+.statusFilterCard:hover {
+    border-color: var(--primary);
+    background: var(--bg-surface);
+}
+
+.statusFilterCardActive {
+    border-color: var(--primary);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.statusFilterIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.statusFilterLabel {
+    flex: 1;
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--glass-border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    transition: var(--transition-fast);
+}
+
+.statusFilterCardActive .checkbox {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.drawerFooter {
+    padding: 1.5rem 2rem 2.5rem;
+    display: flex;
+    gap: 1rem;
+    border-top: 1px solid var(--glass-border);
+    background: white;
+}
+
+.clearBtn {
+    padding: 1rem;
+    background: none;
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.clearBtn:not(:disabled):hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.clearBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.applyBtn {
+    flex: 1;
+    padding: 1rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-md);
+}
+
+.applyBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    background: #4e352d;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .listLoading {
@@ -385,6 +688,35 @@ body.dark .orderCard {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
     border-color: var(--secondary);
+}
+
+.activeOrderCard {
+    border: 2px solid var(--secondary) !important;
+    background: linear-gradient(to right, white, #fffdfa) !important;
+    box-shadow: 0 10px 25px -5px rgba(212, 163, 115, 0.15) !important;
+}
+
+.highlighted {
+    animation: pulseCard 1s infinite alternate;
+    z-index: 5;
+}
+
+@keyframes pulseCard {
+    from {
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 rgba(212, 163, 115, 0);
+        transform: scale(1);
+    }
+    to {
+        border-color: var(--primary);
+        box-shadow: 0 0 20px rgba(212, 163, 115, 0.4);
+        transform: scale(1.02);
+    }
+}
+
+body.dark .activeOrderCard {
+    background: linear-gradient(to right, var(--bg-card), #2a1d17) !important;
+    border-color: var(--secondary) !important;
 }
 
 .orderCardDebt {
@@ -567,8 +899,9 @@ body.dark .debtAlertDesc {
 @media (max-width: 860px) {
     .main {
         grid-template-columns: 1fr;
-        padding: 1.5rem 1rem 3rem;
+        padding: 1.5rem 1.25rem 3rem;
         gap: 1.5rem;
+        width: 100%;
     }
 
     .dashboardSidebar {
@@ -579,14 +912,20 @@ body.dark .debtAlertDesc {
     .hero {
         flex-direction: row;
         text-align: left;
-        padding: 1.25rem;
+        padding: 1.5rem 1.25rem;
         border-radius: 1.25rem;
+        gap: 1.25rem;
+        justify-content: flex-start;
     }
 
     .avatar {
-        width: 3.5rem;
-        height: 3.5rem;
-        font-size: 1.4rem;
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.5rem;
+    }
+
+    .greetingBlock {
+        text-align: left;
     }
 }
 

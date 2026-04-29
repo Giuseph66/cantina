@@ -7,6 +7,7 @@ import {
     CreateCategoryDto, UpdateCategoryDto,
     CreateProductDto, UpdateProductDto,
     UpdateSettingsDto, UpdateOrderStatusDto,
+    BulkStockUpdateDto,
 } from './dto/admin.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -51,6 +52,11 @@ export class AdminController {
     @Get('products')
     getProducts() {
         return this.adminService.getProducts();
+    }
+
+    @Patch('products/bulk-stock')
+    bulkStockUpdate(@Body() dto: BulkStockUpdateDto, @CurrentUser() user: User) {
+        return this.adminService.updateStockBulk(dto, user.id);
     }
 
     @Put('products/:id')

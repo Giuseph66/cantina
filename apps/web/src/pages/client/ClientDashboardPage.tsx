@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../hooks/useApi';
 import { useAuth } from '../../contexts/AuthContext';
@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
     ShoppingBag, Clock, CheckCircle2, AlertCircle, XCircle,
-    QrCode, TrendingUp, Receipt, Wallet,
+    QrCode, TrendingUp, Receipt, Wallet, SlidersHorizontal,
 } from 'lucide-react';
 import styles from './ClientDashboardPage.module.css';
 
@@ -52,8 +52,12 @@ export default function ClientDashboardPage() {
 
     const [tab, setTab] = useState<Tab>('historico');
     const [orders, setOrders] = useState<Order[]>([]);
+    const [highlightActive, setHighlightActive] = useState(false);
     const [summary, setSummary] = useState<Summary | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+    const tabsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!user) { navigate('/login'); return; }
@@ -72,6 +76,21 @@ export default function ClientDashboardPage() {
 
     const activeOrders = orders.filter(o => ['CREATED', 'CONFIRMED', 'PAID', 'IN_PREP', 'READY'].includes(o.status));
 
+    const filteredOrders = orders.filter(o => {
+        if (selectedStatuses.length === 0) return true;
+        return selectedStatuses.includes(o.status);
+    });
+
+    const toggleStatus = (status: string) => {
+        setSelectedStatuses(prev =>
+            prev.includes(status)
+                ? prev.filter(s => s !== status)
+                : [...prev, status]
+        );
+    };
+
+    const clearFilters = () => setSelectedStatuses([]);
+
 
     return (
         <div className={styles.page}>
@@ -81,7 +100,7 @@ export default function ClientDashboardPage() {
                     {/* ── Hero / greeting ── */}
                     <section className={styles.hero}>
                         <div className={styles.avatar}>{initial}</div>
-                        <div>
+                        <div className={styles.greetingBlock}>
                             <p className={styles.eyebrow}>Olá,</p>
                             <h1 className={styles.greeting}>{firstName}</h1>
                             <p className={styles.email}>{user?.email}</p>
@@ -134,7 +153,17 @@ export default function ClientDashboardPage() {
                             <span>
                                 Você tem <strong>{activeOrders.length} pedido{activeOrders.length > 1 ? 's' : ''}</strong> ativo{activeOrders.length > 1 ? 's' : ''} aguardando retirada.
                             </span>
-                            <button className={styles.activeAlertBtn} onClick={() => setTab('historico')}>
+                            <button
+                                className={styles.activeAlertBtn}
+                                onClick={() => {
+                                    setTab('historico');
+                                    setHighlightActive(true);
+                                    setTimeout(() => {
+                                        tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }, 0);
+                                    setTimeout(() => setHighlightActive(false), 3000); // Remove o destaque após 3s
+                                }}
+                            >
                                 Ver
                             </button>
                         </div>
@@ -143,7 +172,7 @@ export default function ClientDashboardPage() {
 
                 <div className={styles.dashboardContent}>
                     {/* ── Tabs ── */}
-                    <div className={styles.tabs}>
+                    <div className={styles.tabs} ref={tabsRef}>
                         <button
                             className={`${styles.tabBtn} ${tab === 'historico' ? styles.tabBtnActive : ''}`}
                             onClick={() => setTab('historico')}
@@ -166,6 +195,21 @@ export default function ClientDashboardPage() {
                     {/* ── Tab: Histórico ── */}
                     {tab === 'historico' && (
                         <div className={styles.section}>
+                            <div className={styles.sectionHeader}>
+                                <div className={styles.sectionTitleBlock}>
+                                    <h3>Seus Pedidos</h3>
+                                    <p>{filteredOrders.length} pedido{filteredOrders.length !== 1 ? 's' : ''} encontrado{filteredOrders.length !== 1 ? 's' : ''}</p>
+                                </div>
+                                <button 
+                                    className={`${styles.filterToggle} ${selectedStatuses.length > 0 ? styles.filterActive : ''}`}
+                                    onClick={() => setIsFilterDrawerOpen(true)}
+                                >
+                                    <SlidersHorizontal size={16} />
+                                    Filtros
+                                    {selectedStatuses.length > 0 && <span className={styles.filterBadge}>{selectedStatuses.length}</span>}
+                                </button>
+                            </div>
+
                             {loading ? (
                                 <div className={styles.listLoading}>Carregando pedidos...</div>
                             ) : orders.length === 0 ? (
@@ -179,12 +223,19 @@ export default function ClientDashboardPage() {
                                 </div>
                             ) : (
                                 <ul className={styles.orderList}>
-                                    {orders.map(order => {
+                                    {filteredOrders.map(order => {
                                         const s = STATUS_MAP[order.status] ?? { label: order.status, color: 'var(--text-dim)', icon: Clock };
                                         const Icon = s.icon;
                                         return (
                                             <li key={order.id}>
-                                                <button className={styles.orderCard} onClick={() => navigate(getOrderTarget(order))}>
+                                                <button
+                                                    className={`
+                                                        ${styles.orderCard} 
+                                                        ${['CONFIRMED', 'PAID', 'IN_PREP', 'READY'].includes(order.status) ? styles.activeOrderCard : ''}
+                                                        ${highlightActive && ['CONFIRMED', 'PAID', 'IN_PREP', 'READY'].includes(order.status) ? styles.highlighted : ''}
+                                                    `}
+                                                    onClick={() => navigate(getOrderTarget(order))}
+                                                >
                                                     <div className={styles.orderTop}>
                                                         <span className={styles.orderDate}>
                                                             {format(new Date(order.createdAt), "dd 'de' MMM, HH:mm", { locale: ptBR })}
@@ -225,56 +276,68 @@ export default function ClientDashboardPage() {
                     {/* ── Tab: Pendências ── */}
                     {tab === 'pendencias' && (
                         <div className={styles.section}>
-                            {(summary?.creditDebtCents ?? 0) === 0 ? (
-                                <div className={styles.emptyState}>
-                                    <Wallet size={60} strokeWidth={1} color="var(--primary)" opacity={0.2} />
-                                    <h3>Tudo em dia!</h3>
-                                    <p>Você não tem nenhuma pendência com a cantina no momento.</p>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className={styles.debtAlert}>
-                                        <div className={styles.debtAlertTop}>
-                                            <Wallet size={20} />
-                                            <span>Saldo devedor na notinha</span>
-                                            <strong className={styles.debtTotal}>{formatCurrency(summary!.creditDebtCents)}</strong>
-                                        </div>
-                                        <p className={styles.debtAlertDesc}>
-                                            Estes pedidos foram realizados com pagamento no balcão e ainda estão aguardando quitação.
-                                            Dirija-se ao caixa para regularizar.
-                                        </p>
-                                    </div>
-
-                                    <ul className={styles.orderList}>
-                                        {orders
-                                            .filter(o => o.paymentMethod === 'ON_PICKUP' && o.status === 'CONFIRMED')
-                                            .map(order => (
-                                                <li key={order.id}>
-                                                    <button className={`${styles.orderCard} ${styles.orderCardDebt}`} onClick={() => navigate(`/order/${order.id}`)}>
-                                                        <div className={styles.orderTop}>
-                                                            <span className={styles.orderDate}>
-                                                                {format(new Date(order.createdAt), "dd 'de' MMM, HH:mm", { locale: ptBR })}
-                                                            </span>
-                                                            <span className={styles.debtAmount}>{formatCurrency(order.totalCents)}</span>
-                                                        </div>
-                                                        <div className={styles.orderItems}>
-                                                            {order.items.map(item => (
-                                                                <span key={item.productId} className={styles.orderItem}>
-                                                                    <span className={styles.orderQty}>{item.qty}×</span>
-                                                                    {item.productName}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    </button>
-                                                </li>
-                                            ))}
-                                    </ul>
-                                </>
-                            )}
+                            <div className={styles.emptyState}>
+                                <Wallet size={56} strokeWidth={1.2} color="var(--primary)" opacity={0.22} />
+                                <h3>Pendências da notinha</h3>
+                                <p>Visualização em manutenção nesta versão.</p>
+                            </div>
                         </div>
                     )}
                 </div>
             </main>
+
+            {/* ── Filter Drawer ── */}
+            <div className={`${styles.drawerOverlay} ${isFilterDrawerOpen ? styles.drawerOpen : ''}`} onClick={() => setIsFilterDrawerOpen(false)}>
+                <div className={styles.drawer} onClick={e => e.stopPropagation()}>
+                    <header className={styles.drawerHeader}>
+                        <div className={styles.drawerTitleBlock}>
+                            <h2 className={styles.drawerTitle}>Filtrar Pedidos</h2>
+                            <p className={styles.drawerSubtitle}>Selecione os status para visualizar</p>
+                        </div>
+                        <button className={styles.drawerClose} onClick={() => setIsFilterDrawerOpen(false)}>
+                            <XCircle size={24} />
+                        </button>
+                    </header>
+
+                    <div className={styles.drawerBody}>
+                        <div className={styles.filterGroups}>
+                            <div className={styles.filterGroup}>
+                                <h4 className={styles.groupLabel}>Status do Pedido</h4>
+                                <div className={styles.statusGrid}>
+                                    {Object.entries(STATUS_MAP).map(([key, s]) => {
+                                        const Icon = s.icon;
+                                        const isSelected = selectedStatuses.includes(key);
+                                        return (
+                                            <button
+                                                key={key}
+                                                className={`${styles.statusFilterCard} ${isSelected ? styles.statusFilterCardActive : ''}`}
+                                                onClick={() => toggleStatus(key)}
+                                            >
+                                                <div className={styles.statusFilterIcon} style={{ background: `${s.color}15`, color: s.color }}>
+                                                    <Icon size={18} />
+                                                </div>
+                                                <span className={styles.statusFilterLabel}>{s.label}</span>
+                                                <div className={styles.checkbox}>
+                                                    {isSelected && <CheckCircle2 size={14} />}
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer className={styles.drawerFooter}>
+                        <button className={styles.clearBtn} onClick={clearFilters} disabled={selectedStatuses.length === 0}>
+                            Limpar Tudo
+                        </button>
+                        <button className={styles.applyBtn} onClick={() => setIsFilterDrawerOpen(false)}>
+                            Ver {filteredOrders.length} resultados
+                        </button>
+                    </footer>
+                </div>
+            </div>
         </div>
     );
 }

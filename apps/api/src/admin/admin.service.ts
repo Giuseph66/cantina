@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../common/services/audit.service';
 import {
@@ -8,6 +8,7 @@ import {
     UpdateProductDto,
     UpdateSettingsDto,
     UpdateOrderStatusDto,
+    BulkStockUpdateDto,
 } from './dto/admin.dto';
 import { OrderStatus } from '../common/enums';
 import { UploadsService } from '../uploads/uploads.service';
@@ -74,23 +75,80 @@ export class AdminService {
     }
 
     async deleteProduct(id: string, actorId: string) {
-        const product = await this.prisma.product.update({
+        const current = await this.prisma.product.findUnique({
             where: { id },
-            data: { isActive: false },
+            select: { id: true, name: true, isActive: true, imageUrl: true },
         });
-        await this.audit.log(actorId, 'PRODUCT_DEACTIVATED', 'Product', id, { name: product.name });
-        return product;
+
+        if (!current) {
+            throw new NotFoundException('Produto não encontrado.');
+        }
+
+        if (current.isActive) {
+            const product = await this.prisma.product.update({
+                where: { id },
+                data: { isActive: false },
+            });
+            await this.audit.log(actorId, 'PRODUCT_DEACTIVATED', 'Product', id, { name: product.name });
+            return product;
+        }
+
+        const relatedOrderItems = await this.prisma.orderItem.count({ where: { productId: id } });
+        if (relatedOrderItems > 0) {
+            throw new ConflictException('Produto inativo com histórico de pedidos não pode ser excluído definitivamente.');
+        }
+
+        const deleted = await this.prisma.product.delete({ where: { id } });
+
+        if (deleted.imageUrl) {
+            this.uploadsService.deleteFileByUrl(deleted.imageUrl);
+        }
+
+        await this.audit.log(actorId, 'PRODUCT_DELETED', 'Product', id, { name: deleted.name });
+        return deleted;
+    }
+
+    async updateStockBulk(dto: BulkStockUpdateDto, actorId: string) {
+        const results = await Promise.all(
+            dto.items.map(async item => {
+                return this.prisma.product.update({
+                    where: { id: item.productId },
+                    data: {
+                        stockQty: dto.isAbsolute ? item.qty : { increment: item.qty }
+                    },
+                });
+            })
+        );
+        await this.audit.log(actorId, 'PRODUCT_STOCK_BULK_UPDATED', 'Product', 'bulk', { 
+            isAbsolute: dto.isAbsolute,
+            count: dto.items.length 
+        });
+        return results;
     }
 
     async getProducts() {
         const products = await this.prisma.product.findMany({
-            include: { category: true },
+            include: {
+                category: true,
+                _count: { select: { orderItems: true } },
+            },
             orderBy: { name: 'asc' },
         });
 
         return products.map(product => ({
-            ...product,
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            priceCents: product.priceCents,
+            categoryId: product.categoryId,
             imageUrl: this.uploadsService.normalizePublicUrl(product.imageUrl),
+            isActive: product.isActive,
+            stockMode: product.stockMode,
+            stockQty: product.stockQty,
+            createdAt: product.createdAt,
+            updatedAt: product.updatedAt,
+            category: product.category,
+            hasOrderHistory: product._count.orderItems > 0,
         }));
     }
 
