@@ -482,13 +482,13 @@
 
 /* Add / Qty Buttons */
 .addBtn {
-    background: rgba(93, 64, 55, 0.08);
-    /* Better contrast than white */
-    color: var(--primary);
+    background: var(--primary);
+    color: white;
     border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -512,12 +512,12 @@
 }
 
 .qtyBtn {
-    width: 28px;
-    height: 28px;
+    width: 38px;
+    height: 38px;
     border: none;
-    background: transparent;
+    background: var(--primary);
     color: white;
-    border-radius: 8px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -551,7 +551,21 @@
 
 /* --- MOBILE SPECIFICS (Mobile-First Enhancements) --- */
 .mobileFloatingCart {
-    display: none;
+    position: fixed;
+    bottom: 2rem;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: calc(100% - 2rem);
+    max-width: 500px;
+    z-index: 100;
+    display: flex;
+    animation: slideUpFloat 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFloat {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 /* Base product card styles that we will override for mobile */
@@ -790,9 +804,9 @@
     }
 
     .addBtn {
-        width: 32px;
-        height: 32px;
-        border-radius: 10px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
     }
 
     .qtyControls {
@@ -801,9 +815,9 @@
     }
 
     .qtyBtn {
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
     }
 
     .qtyValue {
@@ -817,8 +831,9 @@
         bottom: 1rem;
         left: 1rem;
         right: 1rem;
+        width: auto;
+        margin: 0;
         z-index: 100;
-        animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .mobileCheckoutBtn {

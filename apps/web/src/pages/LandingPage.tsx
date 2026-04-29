@@ -200,11 +200,11 @@ export default function LandingPage() {
                                                     {cartQty > 0 ? (
                                                         <div className={styles.qtyControls} onClick={(e) => e.stopPropagation()}>
                                                             <button className={styles.qtyBtn} onClick={() => setQty(p.id, cartQty - 1)}>
-                                                                <Minus size={14} strokeWidth={3} />
+                                                                <Minus size={22} strokeWidth={3} />
                                                             </button>
                                                             <span className={styles.qtyValue}>{cartQty}</span>
                                                             <button className={styles.qtyBtn} onClick={() => add({ productId: p.id, name: p.name, priceCents: p.priceCents })} disabled={isUnavailable}>
-                                                                <Plus size={14} strokeWidth={3} />
+                                                                <Plus size={22} strokeWidth={3} />
                                                             </button>
                                                         </div>
                                                     ) : (
@@ -216,7 +216,7 @@ export default function LandingPage() {
                                                             }}
                                                             disabled={isUnavailable}
                                                         >
-                                                            <Plus size={20} />
+                                                            <Plus size={28} />
                                                         </button>
                                                     )}
                                                 </div>

@@ -7,7 +7,7 @@ import {
 import { CashierLayout } from '../../components/cashier/CashierLayout';
 import { useApi } from '../../hooks/useApi';
 import styles from './CounterSalePage.module.css';
-import { normalizeImageUrl } from '../../utils/imageUrl';
+import { ProxyImage } from '../../components/ProxyImage';
 
 interface Product {
     id: string;
@@ -276,7 +276,7 @@ export default function CounterSalePage() {
                                     {!isListView && (
                                         <div className={styles.productImageWrap}>
                                             {product.imageUrl ? (
-                                                <img src={normalizeImageUrl(product.imageUrl)!} alt={product.name} className={styles.productImage} />
+                                                <ProxyImage src={product.imageUrl} alt={product.name} className={styles.productImage} />
                                             ) : (
                                                 <div className={styles.productImageFallback}>{product.name.charAt(0)}</div>
                                             )}
@@ -619,21 +619,19 @@ export default function CounterSalePage() {
                         {filteredProducts.map((product) => {
                             const outOfStock = product.stockMode === 'CONTROLLED' && product.stockQty <= 0;
                             const qtyInCart = cart.find((item) => item.id === product.id)?.qty ?? 0;
-                            const mobileGridImageUrl = productView === 'GRID' && product.imageUrl
-                                ? normalizeImageUrl(product.imageUrl)
-                                : null;
+                            const mobileGridHasImage = productView === 'GRID' && !!product.imageUrl;
 
                             return (
                                 <article
                                     key={product.id}
-                                    className={`${styles.mobileProductCard} ${productView === 'GRID' ? styles.mobileProductCardGrid : ''} ${mobileGridImageUrl ? styles.mobileProductCardGridWithImage : ''} ${outOfStock ? styles.productCardDisabled : ''}`}
-                                    style={mobileGridImageUrl ? {
-                                        backgroundImage: `linear-gradient(180deg, rgba(17, 12, 10, 0.18) 0%, rgba(17, 12, 10, 0.38) 100%), url("${mobileGridImageUrl}")`,
-                                        backgroundSize: 'cover',
-                                        backgroundPosition: 'center',
-                                        backgroundRepeat: 'no-repeat',
-                                    } : undefined}
+                                    className={`${styles.mobileProductCard} ${productView === 'GRID' ? styles.mobileProductCardGrid : ''} ${mobileGridHasImage ? styles.mobileProductCardGridWithImage : ''} ${outOfStock ? styles.productCardDisabled : ''}`}
                                 >
+                                    {mobileGridHasImage && (
+                                        <div className={styles.mobileGridImageLayer} aria-hidden="true">
+                                            <ProxyImage src={product.imageUrl!} alt="" className={styles.mobileGridImage} />
+                                            <div className={styles.mobileGridImageOverlay} />
+                                        </div>
+                                    )}
 
                                     <div className={styles.mobileProductMain}>
                                         {productView === 'LIST' && (

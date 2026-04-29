@@ -89,20 +89,20 @@ export default function MenuPage() {
                             <div className={styles.qtyControls}>
                                 <button type="button" className={styles.qtyBtn}
                                     onClick={() => setQty(p.id, cartQty - 1)}>
-                                    <Minus size={16} strokeWidth={3} />
+                                    <Minus size={24} strokeWidth={3} />
                                 </button>
                                 <span className={styles.qtyValue}>{cartQty}</span>
                                 <button type="button" className={styles.qtyBtn}
                                     onClick={() => add({ productId: p.id, name: p.name, priceCents: p.priceCents })}
                                     disabled={isUnavailable}>
-                                    <Plus size={16} strokeWidth={3} />
+                                    <Plus size={24} strokeWidth={3} />
                                 </button>
                             </div>
                         ) : (
                             <button className={styles.addBtn}
                                 onClick={() => add({ productId: p.id, name: p.name, priceCents: p.priceCents })}
                                 disabled={isUnavailable}>
-                                <Plus size={20} strokeWidth={3} />
+                                <Plus size={28} strokeWidth={3} />
                             </button>
                         )}
                     </div>
